@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/okellogabrielinnocent/MyDiary.svg?branch=master)](https://travis-ci.org/okellogabrielinnocent/MyDiary)
+[![Build Status](https://travis-ci.org/okellogabrielinnocent/MyDiary.svg?branch=master)](https://travis-ci.org/okellogabrielinnocent/MyDiary?branch=develop)
 [![Coverage Status](https://coveralls.io/repos/github/okellogabrielinnocent/MyDiary/badge.svg?branch=develop)](https://coveralls.io/github/okellogabrielinnocent/MyDiary?branch=develop)
 # MyDiary
  MyDiary is an online journal where users can pen down their thoughts and feelings.

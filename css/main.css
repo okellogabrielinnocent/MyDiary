@@ -1,0 +1,257 @@
+@charset "UTF-8";
+html,
+body {
+    text-align: center;
+    background-image: url("../images/idea.jpg");
+    font: 100% DroidSerif, Georgia, "Times New Roman", Times, serif;
+    
+    background-size: cover;    
+    margin: 0;
+	background-attachment: fixed;
+	background-size: cover;
+    height: 100%;
+    color: #44474a;
+    font-weight: bold;
+}
+
+
+.story_tittle{
+    width: 300px;
+}
+.content {
+    background-color: hsla(0, 25%, 90%, 0.884);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+header{
+    color:rgb(0, 0, 0);
+    text-align: center;
+    margin-top: 40px;
+    color:  #44474a;
+}
+
+.content{
+    width: 400px;
+    padding: 10px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+.label {
+    position: relative;
+    left: 1px;
+    top: -1px;
+    font-size: 12px;
+  }
+  
+  .label-notification {
+    float: right;
+    font-size: 10px;
+    background: #eceded ;
+    padding: 4px;
+    border-radius: 4px;
+    margin: -2px 4px 0 0;
+    transition: background-color 0.2s ease,
+                color 0.2s ease;
+  }
+
+input[type=text],input[type=password], input[type=email], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+textarea, select {
+    width: 100%;
+    height: 420px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 100%;
+    font-weight: bold;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+footer{
+    clear: both;
+    float: center;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+
+img {
+    border-radius: 50%;
+    float: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+
+}
+
+.profile_panel{
+    width: 200px;
+    background-color: rgba(241, 233, 233, 0.897);
+    border-radius: 10px;
+    float: left;
+    padding: 5px;
+}
+
+
+.home_contents{
+    width: 1200px;
+    margin-top: 40px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+hr{
+    width: 150;
+}
+button  {
+    background-color: #4CAF50;
+    padding: .5em 1em;
+    font-size: 15px;
+    display:inline-block;
+    
+    margin:0 0.1em 0.1em 0;
+    border:0.16em solid rgba(255,255,255,0);
+    border-radius:.5em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:100;
+    text-shadow: 0 0.04em 0.04em rgba(0,0,0,0.35);
+    text-align:center;
+    transition: all 0.2s;
+}
+
+
+  
+.card-header button {
+font-size: 12px;
+cursor: pointer;
+width: 100%;
+background: #3498db;
+border: 1px solid #2487c9;
+border-radius: 4px;
+padding: 8px;
+}
+
+.card-header button:hover {
+background: #51a7e0;
+transition: background .2s ease-in-out;
+border: 1px solid #2487c9;
+}
+
+.card-header img {
+width: 132px;
+border-radius: 2px;
+}
+
+.card-links {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.card-links hr {
+border-bottom: 0;
+border-top: 1px solid #ddd;
+margin: 0;
+}
+
+.card-links a {
+text-decoration: none;
+color: #44474a;
+}
+
+.card-links a li {
+margin: 0;
+padding: 14px 6px;
+border-left: 1px solid #fff;
+transition: background-color 0.2s ease,
+            border-left 0.2s ease,
+            color 0.2s ease;
+}
+
+.card-links a li:hover {
+border-left: 1px solid #4CAF50;
+background: #f6f6f6;
+color: #44474a;
+}
+
+.thoughts{
+    width: 970px;
+    height: 600px;
+    border-radius: 10px;
+    float: right;
+    overflow-y: auto;
+}
+
+.articles{
+    width: 950px;
+    font-family: 'Times New Roman', Times, serif;
+    margin-bottom: 2px;
+    padding: 5px;
+    background-color: rgba(241, 233, 233, 0.897);
+    border-radius: 10px;
+    float: right;
+    text-align: justify;
+}
+
+
+.actions{
+    width: 215px;
+    padding: 5px;
+    border-radius: 10px;
+    float: right;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.date{
+    text-align: right;
+}
+
+.settings{
+    width: 770px;
+    height: 600px;
+    margin-right: 15px; 
+    border-radius: 10px;
+    float: right;
+    overflow-y: auto;
+}
+
+.settings .articles{
+    width: 550px;
+    padding: 5px;
+    background-color: rgba(241, 233, 233, 0.897);
+    border-radius: 10px;
+    float: left;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+header{
+    background-color: rgba(241, 233, 233, 0.897);
+    align-self: center;
+    margin-right: 70px;
+    margin-left: 70px;
+}

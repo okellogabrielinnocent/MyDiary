@@ -6,43 +6,16 @@
 2. Users can view all entries to their diary.
 3. Users can view the contents of a diary entry.
 4. Users can add or modify an entry.
+5. Users accept notifacations on thier settings.
 
-**API end points**
-
-- GET /api/v1/entries (gets all entries)
-- GET /api/v1/entries/<entryId> (get entry by id)
-- PUT /api/v1/entries/<entryId> (Updates entry of given id)
-- POST /api/v1/entries (Creates new entry with POST method)
 
 **Getting Started**
 
-These instructions will enable you to run the project on your local machine.
+These instructions will enable you to open the project on github pages.
+ Click this link to start https://okellogabrielinnocent.github.io/MyDiary/
+ or 
+ 1. clone the repo on your computer with git clone https://github.com/okellogabrielinnocent/MyDiary.git
+ 2. Extract folder anywhere on your computer
+ 3. Open index.html on any browser
 
-**Prerequisites**
-
-Below are the things you need to get the project up and running.
-
-- git : To update and clone the repository
-- python3: Language used to develop the api
-- pip: A python package used to install project requirements specified in the requirements text file.
-
-**Installing the project**
-
-Type: 
-        
-       "https://github.com/okellogabrielinnocent/MyDiary.git"
-  in the terminal or git bash or command prompt.
-
-To install the requirements. run:
-
-      pip install -r requirements.txt
-
-cd to the folder ride-my-way
-And from the root of the folder, type:
-      
-      python run.py
-      
-To run the tests and coverage, from the root folder, type: 
-        
-        coverage run -m pytest or nose2 -v
-        coverage report
+ Your good to go

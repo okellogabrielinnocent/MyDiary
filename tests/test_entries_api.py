@@ -36,7 +36,7 @@ class TestEntries(TestBase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('Technical Leader', str(response.data))
-        
+
         response = self.client.get('/api/v1/entries',
                               content_type="application/json")
         self.assertEqual(response.status_code, 200)
@@ -82,10 +82,39 @@ class TestEntries(TestBase):
         
         
              
+    def test_for_wrong_url(self):
+        """test for wrong url"""
+        response = self.client.get('/app/v1/entries/1',
+                              content_type="application/json")
+        self.assertEqual(response.status_code, 404)
+    
+    def test_for_correct_url(self):
+        """test for correct url"""
+        response = self.client.get('/api/v1/entries',
+                              content_type="application/json")
+        self.assertEqual(response.status_code, 200)
 
+    def test_for_correct_url_for_id(self):
+        """test for correct url"""
+        response = self.client.get('/api/v1/entries/<entryId>',
+                              content_type="application/json")
+        self.assertEqual(response.status_code, 200)
 
     def test_update_entry(self):
-        '''data = request.get_json()
+        response = self.client.post('/api/v1/entries', 
+                        data=json.dumps(dict(title = "Deployment", body = "Crazy deployment")), 
+                        content_type="application/json")
+        response = self.client.put('/api/v1/entries/0', data={"title":"Deployment", "body":"Crazy deployment"})
+        self.assertEqual(response.status_code, 500)
+    def test_get_one_entry(self):
+        self.client.post('/api/v1/entries', 
+                        data=json.dumps(dict(id = 0 ,title = "Deployment", body = "Crazy deployment", date = "2018-07-24")), 
+                        content_type="application/json")
+        response = self.client.get('/api/v1/entries/0')
+        self.assertEqual(response.status_code, 200)
+
+    '''def test_update_entry(self):
+        data = request.get_json()
         response = [ entry for entry in Entry.entries if (entry['id'] == 1) ]
         if  not 'tittle' in data:
             error = 'Please wrong tittle'
@@ -103,4 +132,4 @@ class TestEntries(TestBase):
         
         if 'date' in data : 
             en[0]['date'] = data['date']'''
-        pass
+        

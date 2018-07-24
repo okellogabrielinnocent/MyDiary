@@ -8,7 +8,20 @@ class Entry:
     '''
     lets have lists of entries 
     '''
-    entries=[ ]
+    entries=[
+            {
+            'id':'1',
+            'tittle':'Gabby',
+            'body':'Technical Leader is the best way to learn from your ego and teach others the new technologies ',
+            'date':'20-12-2018'
+            },
+            {
+            'id':'2',
+            'tittle':'Software Engineer',
+            'body':'Living in the world of engineering is cool and better for the revolution of the world',
+            'date':'20-12-2018'
+            }
+            ]
 
 
     def __init__(self, id, tittle, body, date):
@@ -44,42 +57,4 @@ class Entry:
         else:
             return "A entry with the tittle'" + tittle + "' exists. Add not successful"
 
-    def update_entry(self, entryId=None, tittle=None,
-                    body=None, date=None):
-        '''
-        updates the entry on index id
-        :param entryId:
-        :param tittle:
-        :param body:
-        :param date:
-        :return:
-        '''
-        if entryId is None or entryId == "":
-            return "entry id must be specified"
-        if not isinstance(id, int):
-            return "entry Id must be an Integer"
-        if tittle is None and date is None and body is None:
-            return "Either or all of entry tittle, body, date or quantity must be provided"
-        entry = [entry for entry in self.entries if entry['id'] == entryId]
-        if ValidateInputs.is_valid_entry_date(date)[0] == True:
-            entry[0]['date'] = date
-        if ValidateInputs.is_valid_entry_tittle(tittle)[0] == True:
-            entry[0]['tittle'] = tittle
-        if ValidateInputs.is_valid_body_tittle(body)[0] == True:
-            entry[0]['body'] = body
-        return "entry updated"
-
-    def get_entry(self, entryid=None):
-        '''
-        searches all entries and retrieves a entry whose index is entryid
-        :param entryid:
-        :return:
-        '''
-        if entryid is None or entryid == "":
-            return "entry id must be specified"
-        if not isinstance(entryid, int):
-            return "entry Id must be an Integer"
-        entry = [entry for entry in self.entries if entry['id'] == entryid]
-        if entry is not None and entry is not []:
-            return entry
-        return "Entry not found"
+    

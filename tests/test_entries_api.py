@@ -11,7 +11,18 @@ class TestEntries(TestBase):
     def setUp(self):
         pass
 
-    
+    def test_create_entry(self):
+        """test to create an entry"""
+        
+        response = self.client.post('/api/v1/entries', 
+                                    data=json.dumps(
+                                    dict(id=1, tittle="kampala", body="This content body",
+                                    date ="2018-07-24")), 
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+
+
     def test_get_entries(self):
         """
         Test API that view all entries.
@@ -25,6 +36,10 @@ class TestEntries(TestBase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('Technical Leader', str(response.data))
+        
+        response = self.client.get('/api/v1/entries',
+                              content_type="application/json")
+        self.assertEqual(response.status_code, 200)
         
 
     def test_get_entry(self):
@@ -63,7 +78,7 @@ class TestEntries(TestBase):
                     content_type='application/json',
                     data=json.dumps(entry1))
 
-                self.assertEqual(result.status_code, 200)
+                self.assertEqual(response.status_code, 200)
         
         
              

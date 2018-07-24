@@ -56,5 +56,3 @@ class Entry:
             return "entry " + tittle + " added"
         else:
             return "A entry with the tittle'" + tittle + "' exists. Add not successful"
-
-    

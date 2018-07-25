@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/okellogabrielinnocent/MyDiary.svg?branch=master)](https://travis-ci.org/okellogabrielinnocent/MyDiary?branch=develop)
-[![Coverage Status](https://coveralls.io/repos/github/okellogabrielinnocent/MyDiary/badge.svg?branch=develop)](https://coveralls.io/github/okellogabrielinnocent/MyDiary?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/okellogabrielinnocent/MyDiary/badge.svg?branch=develop)](https://coveralls.io/github/okellogabrielinnocent/MyDiary?)
 # MyDiary
  MyDiary is an online journal where users can pen down their thoughts and feelings.
 
@@ -19,7 +19,7 @@
 **Getting Started**
 
 These instructions will enable you to run the project on your local machine.
-
+Set up postgress
 **Prerequisites**
 
 Below are the things you need to get the project up and running.

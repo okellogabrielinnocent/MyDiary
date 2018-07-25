@@ -1,6 +1,6 @@
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
-from database_tables import tables_list  # has the sql for table creation
+from .database_tables import tables_list
 import jwt
 from flask import jsonify
 import os
@@ -13,12 +13,12 @@ JWT_ALGORITHM = 'HS256'
 JWT_EXP_DELTA_SECONDS = 9000
 
 
-class DatabaseConnection(object):
+class Database(object):
     """
 
     Creates database connection and tables
     Has methods associated with database objects like
-    users, entrys and entry requests
+    users, entries and entry requests
     The methods are called from the views.py file
 
     """
@@ -28,7 +28,7 @@ class DatabaseConnection(object):
         if os.getenv('APP_SETTINGS') == "testing":
             self.dbname = "test_db"
         else:
-            self.dbname = "My_diary"
+            self.dbname = "mydiary"
 
         try:
             # establishing a server connection
@@ -47,17 +47,18 @@ class DatabaseConnection(object):
 
     def create_tables(self):
         """ Create database tables from the database_tables.py file """
-        for table_info in tables_list:
-            for table_name in table_info:
-                self.cursor.execute(table_info[table_name])
+        for data in tables_list:
+            for table_name in data:
+                self.cursor.execute(data[table_name])
 
     def should_be_unique(self,
                          username,
                          email,
                          phone_number
                          ):
-        """ Is a helper function that is called by other functions
-            to ensure username and phone_number are unique
+        """ 
+        Is a helper function that is called by other functions
+        to ensure username and phone_number are unique
         """
 
         select_query = "SELECT username, email, phone_number FROM mydiary_users"
@@ -85,7 +86,7 @@ class DatabaseConnection(object):
         if self.should_be_unique(username, email, phone_number):
             return self.should_be_unique(username, email, phone_number)
 
-        # hashing the password
+        # hash the password
         hashed_password = generate_password_hash(password, method="sha256")
 
         # inserting user info into the mydiary_users table
@@ -112,23 +113,22 @@ class DatabaseConnection(object):
             return str(err)
 
         # assigning a web token if info right
-        for user_info in result:
-            if user_info[0] == username and check_password_hash(user_info[1], password):
+        for user_data in result:
+            if user_data[0] == username and check_password_hash(user_data[1], password):
                 payload = {
-                    'id': user_info[2],
+                    'id': user_data[2],
                     'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
                 }
                 token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
-                return jsonify({"message": token.decode('UTF-8')})
+                return jsonify({"Message": token.decode('UTF-8')})
 
         else:
-            return jsonify({"message": "Email or password is incorrect"})
+            return jsonify({"Message": "Email or password is incorrect"})
 
     def get_all_users(self):
         """ Returns a list of all users in the database """
 
-        select_query = "SELECT name, username, email, phone_number, " \
-                       "bio, gender FROM mydiary_users"
+        select_query = "SELECT * FROM mydiary_users"
         self.cursor.execute(select_query)
         results = self.cursor.fetchall()
 
@@ -173,9 +173,9 @@ class DatabaseConnection(object):
                                 )
         except psycopg2.Error as err:
             return str(err)
-        return "entry create successfully"
+        return "Entry created successfully"
 
-    def get_entrys(self):
+    def get_entries(self):
         """ Returns a list of all entry offers available """
 
         sql = "SELECT tittle, body, creation_date, update_date, " \
@@ -183,31 +183,31 @@ class DatabaseConnection(object):
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
-        entrys_list = []
+        entries_list = []
         for entry in result:
 
             entry_info = {}
             entry_info['tittle'] = entry[0]
             entry_info['body'] = entry[1]
             entry_info['creation_date'] = entry[2]
-            entry_info['update_date'] = entry[3]]
+            entry_info['update_date'] = entry[3]
             entry_info['entry_id'] = entry[4]
 
-            entrys_list.append(entry_info)
-        return jsonify({"entries": entrys_list})
+            entries_list.append(entry_info)
+        return jsonify({"Entries": entries_list})
 
-    def entrys_given(self, user_id):
-        """ Returns a list of entrys given by the User(user)"""
+    def entries_written(self, user_id):
+        """ Returns a list of entries given by the User(user)"""
         try:
             sql = "SELECT tittle, body, creation_date, update_date, " \
-                  "start_date, id FROM mydiary_entries WHERE " \
+                  "id FROM mydiary_entries WHERE " \
                   "user_id=%s" % user_id
             self.cursor.execute(sql)
             result = self.cursor.fetchall()
         except:
-            return jsonify({"message": "Some thing went wrong"})
+            return jsonify({"Message": "Some thing went wrong"})
 
-        entrys_list = []
+        entries_list = []
         for entry in result:
             entry_info = {}
             entry_info['tittle'] = entry[0]
@@ -216,8 +216,8 @@ class DatabaseConnection(object):
             entry_info['update_date'] = entry[3]
             entry_info['entry_id'] = entry[4]
 
-            entrys_list.append(entry_info)
-        return entrys_list
+            entries_list.append(entry_info)
+        return entries_list
 
     def get_user_info(self, user_id):
         """ Gets the info of the user with the user_id provided"""
@@ -246,11 +246,11 @@ class DatabaseConnection(object):
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
         if not result:
-            return jsonify({"message": "The entry offer with entry_id {} does not exist".format(entry_id)})
+            return jsonify({"Message": "The entry offer with entry_id {} does not exist".format(entry_id)})
 
         entry_info = {}
         for info in result:
-            # user information to be returned with entrys details
+            # user information to be returned with entries details
             user_id = info[4]
             user_info = self.get_user_info(user_id)
             entry_info['user details'] = user_info

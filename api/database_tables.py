@@ -1,8 +1,8 @@
 tables_list = [
     {
-        "carpool_users": """
+        "mydiary_users": """
 
-                         CREATE TABLE IF NOT EXISTS carpool_users(
+                         CREATE TABLE IF NOT EXISTS mydiary_users(
                          id serial PRIMARY KEY, 
                          name VARCHAR (100), 
                          username VARCHAR (100) UNIQUE NOT NULL ,
@@ -16,37 +16,18 @@ tables_list = [
     }
     ,
     {
-        "carpool_rides": """
+        "mydiary_entry": """
 
-                         CREATE TABLE IF NOT EXISTS carpool_rides(
+                         CREATE TABLE IF NOT EXISTS mydiary_entry(
                          id serial PRIMARY KEY,
-                         
-                         driver_id INTEGER NOT NULL ,
-                         FOREIGN KEY(driver_id) REFERENCES carpool_users(id) ON DELETE CASCADE,
-                         origin VARCHAR (100) NOT NULL ,
-                         meet_point VARCHAR NOT NULL ,
-                         contribution INTEGER DEFAULT 0,
-                         free_spots INTEGER NOT NULL ,
-                         start_date VARCHAR (12),
-                         finish_date VARCHAR (12),
-                         terms VARCHAR (1000)
+                         user_id INTEGER NOT NULL ,
+                         FOREIGN KEY(user_id) REFERENCES mydiary_users(id) ON DELETE CASCADE,
+                         tittle VARCHAR (100) NOT NULL ,
+                         body VARCHAR NOT NULL ,
+                         creation_date VARCHAR (12),
+                         update_date VARCHAR (12)
                          )
                             
                          """
-    },
-    {
-        "carpool_ride_requests": """
-                                 CREATE TABLE IF NOT EXISTS carpool_ride_request(
-                                 id serial PRIMARY KEY,
-                                 
-                                 ride_id INTEGER NOT NULL ,
-                                 FOREIGN KEY (ride_id) 
-                                 REFERENCES carpool_rides(id) ON DELETE CASCADE,
-                                 
-                                 passenger_id INTEGER NOT NULL ,
-                                 FOREIGN KEY(passenger_id) REFERENCES carpool_users(id) ON DELETE CASCADE ,
-                                 accepted VARCHAR DEFAULT 'pending' ) 
-                                 
-                                 """
     }
-]
+    ]

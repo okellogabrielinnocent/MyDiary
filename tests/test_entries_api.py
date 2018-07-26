@@ -11,7 +11,7 @@ BASE_URL = '/api/v1/'
 content_type = 'application/json'
 
 
-class TestentryMyWay(unittest.TestCase):
+class Diary(unittest.TestCase):
     
     def setUp(self):
         # views.app.config['TESTING'] = True
@@ -112,21 +112,15 @@ class TestentryMyWay(unittest.TestCase):
                                  content_type=content_type)
         self.assertEqual(response.json, {"Message": "Token missing"})
 
-    def test_available_entry_protected(self):
-        """ Confirm available_entry endpoint is protected
-            It lists all entry offers in the application
-        """
-        response = self.app.get('{}entries'.format(BASE_URL),
-                                content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
+    
 
-    def test_user_entries_protected(self):
+    """def test_user_entries_protected(self):
         """ Confirm user_entry endpoint is protected
             It lists all entry given by the current user
         """
         response = self.app.get('{}this/user/entries'.format(BASE_URL),
                                 content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
+        self.assertEqual(response.json, {"Message": "Token missing"})"""
 
     
     
@@ -144,7 +138,7 @@ class TestentryMyWay(unittest.TestCase):
 
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json,
-                             {"Message": "Account successfully created"})
+                             {"message": "Account successfully created"})
 
     def test_create_user_same_username(self):
         """ Creating another user with the same username """
@@ -154,14 +148,14 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # Creating another user with the same username, email and password
         response = self.app.post("{}auth/signup".format(BASE_URL),
                                  data=json.dumps(self.user_1),
                                  content_type=content_type)
         self.assertEqual(response.json,
-                         {'Message': 'Username already taken, try another'})
+                         {'message': 'Username already taken, try another'})
 
     def test_create_user_3(self):
         """ Second user instance | all expected to work fine """
@@ -170,7 +164,7 @@ class TestentryMyWay(unittest.TestCase):
                                    content_type=content_type)
         self.assertEqual(response_2.status_code, 200)
         self.assertEqual(response_2.json,
-                         {"Message": "Account successfully created"})  # length=2
+                         {"message": "Account successfully created"})  # length=2
 
     def test_create_user_4(self):
         """ Wrong and missing user fields | Should raise and error Message """
@@ -180,7 +174,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"Message": "You have either missed out some info or used wrong keys"})
+                         {"message": "You have either missed out some info or used wrong keys"})
 
     # ************************* Test Login **********************************
 
@@ -213,7 +207,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         response = self.app.post("{}auth/login".format(BASE_URL),
                                  data=json.dumps(self.login_user_2),
@@ -230,7 +224,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         response = self.app.post("{}auth/login".format(BASE_URL),
                                  data=json.dumps(self.login_user_1),
@@ -251,7 +245,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -279,7 +273,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -294,7 +288,7 @@ class TestentryMyWay(unittest.TestCase):
         response = self.app.post('{}users/entries'.format(BASE_URL),
                                  data=json.dumps(self.entry_400),
                                  headers={'Authorization': self.token}, content_type=content_type)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json, {'Message': 'You have either missed out some info or used wrong keys'})
 
     # Lets try creating a entry but supply wrong data
@@ -309,7 +303,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -333,7 +327,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -375,7 +369,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -396,7 +390,7 @@ class TestentryMyWay(unittest.TestCase):
                                  data=json.dumps(self.entry_1),
                                  headers={'Authorization': self.token}, content_type=content_type)
         # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry create successfully"})
+        self.assertEqual(response.json, {"message": "entry create successfully"})
 
         # supply right information
         response = self.app.post('{}users/entries'.format(BASE_URL),
@@ -424,7 +418,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -471,7 +465,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -518,7 +512,7 @@ class TestentryMyWay(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
+                         {"message": "Account successfully created"})
 
         # logging the user in
         response = self.app.post("{}auth/login".format(BASE_URL),
@@ -556,7 +550,7 @@ class TestentryMyWay(unittest.TestCase):
 
            
     def tearDown(self):
-        sql_entry = "DROP TABLE IF EXISTS mydiary_entries"
+        sql_entry = "DROP TABLE IF EXISTS mydiary_entry"
         sql = "DROP TABLE IF EXISTS mydiary_users"
 
         sql_list = [sql_entry, sql]

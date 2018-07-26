@@ -24,7 +24,7 @@ def token_required(f):
         token = None
 
         if 'Authorization' in request.headers:
-            token = request.headers['Authorization']
+            token = request.headers.get('Authorization')
 
         if not token:
             return jsonify({"message": "Token missing"})
@@ -37,7 +37,8 @@ def token_required(f):
             database_connection.cursor.execute(sql)
             current_user = database_connection.cursor.fetchone()
         except Exception as ex:
-            return jsonify({"Message Token": str(ex)})
+            print(Exception)
+            return jsonify({"Bad token": str(ex)})
 
         return f(current_user, *args, **kwargs)
     return decorated
@@ -103,12 +104,13 @@ def login():
 
 
 @app.route('/api/v1/users', methods=['GET'])
-def list_of_users():
+@token_required
+def list_of_users(current_user):
     """ Get all users"""
     result = database_connection.get_all_users()
     return jsonify({"Users": result})
 
-@app.route('/api/v1/users/entries', methods=['POST'])
+'''@app.route('/api/v1/users/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
     
@@ -141,9 +143,9 @@ def create_entry(current_user):
         return jsonify({"message": "Start date should be string"})
 
     if not isinstance(creation_date, str):
-        return jsonify({"message": "Finish date should be string"})
+        return jsonify({"message": "Update date should be string and of same day as create date"})
 
-    result = database_connection.create_entry(current_user[0],
+    result = database_connection.create_entryy(current_user[0],
                                             tittle,
                                             body,
                                             update_date,
@@ -152,19 +154,18 @@ def create_entry(current_user):
 
 
 @app.route('/api/v1/entries', methods=['GET'])
-@token_required
-def available_entries(current_user):
-    """ Retrieves all the available entry offers """
+def available_entries():
+    """ Retrieves all the available entry written """
     result = database_connection.get_entries()
     return result
 
 
-@app.route('/api/v1/this/user/entries', methods=['GET'])
+@app.route('/api/v1/entries', methods=['GET'])
 @token_required
 def user_entries(current_user):
-    """ Retrieves all the available entry offers """
-    result = database_connection.entries_written(current_user[0])
-    return jsonify({"{}'s entry offers".format(current_user[2]): result})
+    """ Retrieves all the available entry written """
+    result = database_connection.entries_written(current_user)
+    return jsonify({"{}'s entry written".format(current_user[""]): result})
 
 
 @app.route('/api/v1/entries/<entry_id>', methods=['GET'])
@@ -180,4 +181,4 @@ def get_single_entry(current_user, entry_id):
         return jsonify({"message": "Input should integer"})
     else:
         result = database_connection.entry_details(entry_id)
-        return result
+        return result'''

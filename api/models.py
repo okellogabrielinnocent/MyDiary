@@ -103,6 +103,7 @@ class Database(object):
         return jsonify({"message": "Account successfully created"})
 
     def sign_in(self, username, password):
+        
         """ A sign a web token to current user if username and password match """
         try:
             # query the user table for the username and password
@@ -124,6 +125,7 @@ class Database(object):
 
         else:
             return jsonify({"Message": "Email or password is incorrect"})
+    
 
     def get_all_users(self):
         """ Returns a list of all users in the database """
@@ -135,20 +137,20 @@ class Database(object):
         user_list = []
 
         for user in results:
-            user_info = {}
-            user_info['name'] = user[0]
-            user_info['username'] = user[1]
-            user_info['email'] = user[2]
-            user_info['phone_number'] = user[3]
-            user_info['gender'] = user[4]
-            user_info['password'] = user[5]
-            user_info['id'] = user[6]
+            user_details = {}
+            user_details['name'] = user[0]
+            user_details['username'] = user[1]
+            user_details['email'] = user[2]
+            user_details['phone_number'] = user[3]
+            user_details['gender'] = user[4]
+            user_details['password'] = user[5]
+            user_details['id'] = user[6]
 
-            user_list.append(user_info)
+            user_list.append(user_details)
 
         return user_list
 
-    def create_entry(self,
+    def create_entryy(self,
                     user_id,
                     tittle,
                     body,
@@ -180,7 +182,7 @@ class Database(object):
         """ Returns a list of all entry offers available """
 
         sql = "SELECT tittle, body, creation_date, update_date, " \
-              "id FROM mydiary_entries"
+              "id FROM mydiary_entry"
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
@@ -201,7 +203,7 @@ class Database(object):
         """ Returns a list of entries given by the User(user)"""
         try:
             sql = "SELECT tittle, body, creation_date, update_date, " \
-                  "id FROM mydiary_entries WHERE " \
+                  "id FROM mydiary_entry WHERE " \
                   "user_id=%s" % user_id
             self.cursor.execute(sql)
             result = self.cursor.fetchall()

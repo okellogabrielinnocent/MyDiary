@@ -114,14 +114,14 @@ class Diary(unittest.TestCase):
 
     
 
-    """def test_user_entries_protected(self):
+    '''"""def test_user_entries_protected(self):
         """ Confirm user_entry endpoint is protected
             It lists all entry given by the current user
         """
         response = self.app.get('{}this/user/entries'.format(BASE_URL),
                                 content_type=content_type)
         self.assertEqual(response.json, {"Message": "Token missing"})"""
-
+'''
     
     
         

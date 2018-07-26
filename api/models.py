@@ -113,10 +113,10 @@ class Database(object):
             return str(err)
 
         # assigning a web token if info right
-        for user_data in result:
-            if user_data[0] == username and check_password_hash(user_data[1], password):
+        for data in result:
+            if data[0] == username and check_password_hash(data[1], password):
                 payload = {
-                    'id': user_data[2],
+                    'id': data[2],
                     'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
                 }
                 token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
@@ -128,7 +128,7 @@ class Database(object):
     def get_all_users(self):
         """ Returns a list of all users in the database """
 
-        select_query = "SELECT * FROM mydiary_users"
+        select_query = "SELECT name, username, email, phone_number,gender, password,id FROM mydiary_users"
         self.cursor.execute(select_query)
         results = self.cursor.fetchall()
 
@@ -140,8 +140,9 @@ class Database(object):
             user_info['username'] = user[1]
             user_info['email'] = user[2]
             user_info['phone_number'] = user[3]
-            user_info['bio'] = user[4]
-            user_info['gender'] = user[5]
+            user_info['gender'] = user[4]
+            user_info['password'] = user[5]
+            user_info['id'] = user[6]
 
             user_list.append(user_info)
 
@@ -160,7 +161,7 @@ class Database(object):
             decorator as id
         """
         try:
-            sql = "INSERT INTO mydiary_entries(user_id, " \
+            sql = "INSERT INTO mydiary_entry(user_id, " \
                                              "tittle, " \
                                              "body, " \
                                              "creation_date, " \

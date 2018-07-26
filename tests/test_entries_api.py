@@ -103,13 +103,6 @@ class TestentryMyWay(unittest.TestCase):
 
     # ********** Test whether the endpoints are protected ****************
 
-    def test_list_of_users_protected(self):
-        """ Confirm list_of_users endpoint is protected
-            It lists all users in the application
-        """
-        response = self.app.get('{}users'.format(BASE_URL),
-                                content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
 
     def test_create_entry_protected(self):
         """ Confirm list_of_users endpoint is protected
@@ -127,47 +120,17 @@ class TestentryMyWay(unittest.TestCase):
                                 content_type=content_type)
         self.assertEqual(response.json, {"Message": "Token missing"})
 
-    def test_driver_entries_protected(self):
-        """ Confirm driver_entry endpoint is protected
-            It lists all entry given by the current driver
+    def test_user_entries_protected(self):
+        """ Confirm user_entry endpoint is protected
+            It lists all entry given by the current user
         """
         response = self.app.get('{}this/user/entries'.format(BASE_URL),
                                 content_type=content_type)
         self.assertEqual(response.json, {"Message": "Token missing"})
 
-    def test_get_single_entry_protected(self):
-        """ Confirm get_single_entry endpoint is protected
-            Lists the details of a single entry by passing in the id
-        """
-        response = self.app.post('{}entries/1/requests'.format(BASE_URL),
-                                 content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
-
-    def test_request_for_entry_protected(self):
-        """ Confirm request_for_entry endpoint is protected
-            Enables a passenger to request for a entry offer
-        """
-        response = self.app.post('{}entries/<entry_id>/requests'.format(BASE_URL),
-                                 content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
-
-    def test_requests_to_this_entry_protected(self):
-        """ Confirm requests_to_this_entry endpoint is protected
-            Enables the driver to view a list of entry requests made
-            to the entry with id he/she passes in
-        """
-        response = self.app.get('{}users/entries/1/requests'.format(BASE_URL),
-                                content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
-
-    def test_reaction_to_entry_request_protected(self):
-        """ Confirm reaction_to_entry_request endpoint is protected
-            Enables the driver to to accept or reject a entry
-            request
-        """
-        response = self.app.put('{}users/entries/2/reaction'.format(BASE_URL),
-                                content_type=content_type)
-        self.assertEqual(response.json, {"Message": "Token missing"})
+    
+    
+        
 
     # ************** Test Signup **************************************************
 
@@ -401,9 +364,9 @@ class TestentryMyWay(unittest.TestCase):
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(len(response.json['entries']), 2)
 
-    # ************* Test driver entries *******************************
+    # ************* Test user entries *******************************
 
-    def test_driver_entries(self):
+    def test_user_entries(self):
         """ Create a user , login and then create a entry """
         # Creating a user instance, length is one
         response = self.app.post("{}auth/signup".format(BASE_URL),
@@ -591,213 +554,7 @@ class TestentryMyWay(unittest.TestCase):
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.json, {"Message": "The entry offer with entry_id {} does not exist".format(4)})
 
-    # *********** Test request to join entry *****************************
-
-    def test_request_for_entry_1(self):
-        """ Making a request to a entry
-            Signup a user
-            login the user
-            Let the user create two entry offers
-
-            create another user, let the user login
-            let current login request for a entry
-            supply entry id that exists
-
-         """
-        # Creating a user instance, length is one
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
-
-        # logging the user in
-        response = self.app.post("{}auth/login".format(BASE_URL),
-                                 data=json.dumps(self.login_user_1),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
-
-        # capturing the token
-        self.token = response.json['Message']
-        data = jwt.decode(self.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-        sql = "SELECT * FROM  mydiary_users WHERE id=%s" % (data['id'])
-        self.cur.cursor.execute(sql)
-        self.current_user = self.cur.cursor.fetchone()
-
-        """ Create a entry offer 1st"""
-        # supply right information
-        response = self.app.post('{}users/entries'.format(BASE_URL),
-                                 data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry create successfully"})
-
-        """ Create second entry offer 2nd"""
-        # supply right information
-        response = self.app.post('{}users/entries'.format(BASE_URL),
-                                 data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry create successfully"})
-
-        """ Creating another user who will request to join a entry"""
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_2),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
-
-        """ Login the user who is going to request for a entry """
-        # logging the user in
-        response = self.app.post("{}auth/login".format(BASE_URL),
-                                 data=json.dumps(self.login_user_2),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
-
-        # capturing the token
-        self.token = response.json['Message']
-        data = jwt.decode(self.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-        sql = "SELECT * FROM  mydiary_users WHERE id=%s" % (data['id'])
-        self.cur.cursor.execute(sql)
-        self.current_user = self.cur.cursor.fetchone()
-
-        """ Now let the user request for the first entry id=1"""
-        # supply right information
-        response = self.app.post('{}entries/1/requests'.format(BASE_URL),
-                                 # data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {'Message': 'Your request has been successfully sent and pending approval'})
-
-    def test_request_for_entry_2(self):
-        """ Create a user , login and then create a entry
-            Fetch entry details for a entry that does not exist
-         """
-        # Creating a user instance, length is one
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
-
-        # logging the user in
-        response = self.app.post("{}auth/login".format(BASE_URL),
-                                 data=json.dumps(self.login_user_1),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
-
-        # capturing the token
-        self.token = response.json['Message']
-        data = jwt.decode(self.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-        sql = "SELECT * FROM  mydiary_users WHERE id=%s" % (data['id'])
-        self.cur.cursor.execute(sql)
-        self.current_user = self.cur.cursor.fetchone()
-
-        # supply right information
-        response = self.app.post('{}users/entries'.format(BASE_URL),
-                                 data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry create successfully"})
-
-        # supply right information
-        response = self.app.post('{}users/entries'.format(BASE_URL),
-                                 data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry create successfully"})
-
-        """ Creating another user """
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_2),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
-
-        # logging the user in
-        response = self.app.post("{}auth/login".format(BASE_URL),
-                                 data=json.dumps(self.login_user_2),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
-
-        # capturing the token
-        self.token = response.json['Message']
-        data = jwt.decode(self.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-        sql = "SELECT * FROM  mydiary_users WHERE id=%s" % (data['id'])
-        self.cur.cursor.execute(sql)
-        self.current_user = self.cur.cursor.fetchone()
-
-        # supply right information
-        response = self.app.post('{}entries/19/requests'.format(BASE_URL),
-                                 # data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry_id ({}) does not exist".format(19)})
-
-    # current user request to join a entry he/she has created
-    def test_request_for_entry_3(self):
-        """ Making a request to a entry
-            Signup a user
-            login the user
-            Let the user create two entry offers
-
-            create another user, let the user login
-            let current login request for a entry
-            he/she has created
-
-         """
-        # Creating a user instance, length is one
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"Message": "Account successfully created"})
-
-        # logging the user in
-        response = self.app.post("{}auth/login".format(BASE_URL),
-                                 data=json.dumps(self.login_user_1),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
-
-        # capturing the token
-        self.token = response.json['Message']
-        data = jwt.decode(self.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-        sql = "SELECT * FROM  mydiary_users WHERE id=%s" % (data['id'])
-        self.cur.cursor.execute(sql)
-        self.current_user = self.cur.cursor.fetchone()
-
-        """ Create a entry offer 1st"""
-        # supply right information
-        response = self.app.post('{}users/entries'.format(BASE_URL),
-                                 data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {"Message": "entry create successfully"})
-
-        """ Now let the current user request to join a entry he/she has created"""
-        # supply right information
-        response = self.app.post('{}entries/1/requests'.format(BASE_URL),
-                                 # data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.json, {'Message': 'Your can not make a entry request to a entry you created'})
-
-        
+           
     def tearDown(self):
         sql_entry = "DROP TABLE IF EXISTS mydiary_entries"
         sql = "DROP TABLE IF EXISTS mydiary_users"
@@ -805,7 +562,3 @@ class TestentryMyWay(unittest.TestCase):
         sql_list = [sql_entry, sql]
         for sql in sql_list:
             self.cur.cursor.execute(sql)
-
-
-
-

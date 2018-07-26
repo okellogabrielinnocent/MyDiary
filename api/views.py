@@ -33,7 +33,7 @@ def token_required(f):
         try:
             data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
-            sql = "SELECT username,password FROM  mydairy_users WHERE id=%s" % (data['id'])
+            sql = "SELECT username, password FROM  mydairy_users WHERE id=%s" % (data['id'])
             database_connection.cursor.execute(sql)
             current_user = database_connection.cursor.fetchone()
         except Exception as ex:
@@ -101,6 +101,12 @@ def login():
     return result
 
 
+
+@app.route('/api/v1/users', methods=['GET'])
+def list_of_users():
+    """ Get all users"""
+    result = database_connection.get_all_users()
+    return jsonify({"Users": result})
 
 @app.route('/api/v1/users/entries', methods=['POST'])
 @token_required

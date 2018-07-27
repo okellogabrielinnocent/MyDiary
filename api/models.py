@@ -23,7 +23,7 @@ class Database(object):
             self.dbname = "mydiary"
 
         try:
-            # establishing a server connection
+            # establish a server connection
             self.connection = psycopg2.connect(dbname="{}".format(self.dbname),
                                                user="postgres",
                                                password="moschinogab19",
@@ -31,10 +31,9 @@ class Database(object):
                                                )
             self.connection.autocommit = True
 
-            # activate connection cursor
+            # call connection cursor
             self.cursor = self.connection.cursor()
         except psycopg2.Error as err:
-            # bug in returning under the __init__
             print("Can not establish a database connection")
 
     def create_tables(self):
@@ -45,7 +44,7 @@ class Database(object):
             for table_name in data:
                 self.cursor.execute(data[table_name])
 
-    def should_be_unique(self,
+    def validate(self,
                          username,
                          email,
                          phone_number
@@ -73,8 +72,8 @@ class Database(object):
                ):
 
         # Check if username, email and phone_number don't exist
-        if self.should_be_unique(username, email, phone_number):
-            return self.should_be_unique(username, email, phone_number)
+        if self.validate(username, email, phone_number):
+            return self.validate(username, email, phone_number)
 
         # hash the password
         hashed_password = generate_password_hash(password, method="sha256")
@@ -109,6 +108,7 @@ class Database(object):
         Assigning a web token if user info right to user_id =id
         '''
         for user_data in result:
+            print(user_data)
             if user_data[0] == username and check_password_hash(user_data[1], password):
                 payload = {
                     'id': user_data[2],
@@ -177,28 +177,6 @@ class Database(object):
             entries_list.append(entry_info)
         return jsonify({"Entries": entries_list})
 
-    def entries_written(self, user_id):
-        """ Returns a list of entries given by the User(user)"""
-        try:
-            sql = "SELECT tittle, body, creation_date, update_date, " \
-                  "id FROM mydiary_entry WHERE " \
-                  "user_id=%s" % user_id
-            self.cursor.execute(sql)
-            result = self.cursor.fetchall()
-        except:
-            return jsonify({"Message": "Some thing went wrong"})
-
-        entries_list = []
-        for entry in result:
-            entry_info = {}
-            entry_info['tittle'] = entry[0]
-            entry_info['body'] = entry[1]
-            entry_info['creation_date'] = entry[2]
-            entry_info['update_date'] = entry[3]
-            entry_info['entry_id'] = entry[4]
-
-            entries_list.append(entry_info)
-        return entries_list
 
     def get_user_info(self, user_id):
         """ Gets the info of the user with the user_id provided"""

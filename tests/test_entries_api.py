@@ -174,7 +174,7 @@ class Diary(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "You have either missed out some info or used wrong keys"})
+                         {"message": "Please add all infromation"})
 
     # ************************* Test Login **********************************
 
@@ -193,7 +193,7 @@ class Diary(unittest.TestCase):
                                    content_type=content_type)
 
         self.assertEqual(response_1.status_code, 200)
-        self.assertEqual(response_1.json, {'Message': 'Email or password is incorrect'})
+        self.assertEqual(response_1.json, {'Message': 'Username or password is incorrect'})
 
     def test_login_2(self):
         """ create a user and login with with username which
@@ -213,7 +213,7 @@ class Diary(unittest.TestCase):
                                  data=json.dumps(self.login_user_2),
                                  content_type=content_type)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'Message': 'Email or password is incorrect'})
+        self.assertEqual(response.json, {'Message': 'Username or password is incorrect'})
 
     def test_login_3(self):
         """ Lets creates a user and then login expect a success """

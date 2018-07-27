@@ -38,7 +38,7 @@ def token_required(f):
         try:
             data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
-            sql = "SELECT username, password FROM  mydiary_users WHERE id=%s" % (data['id'])
+            sql = "SELECT username, password, id FROM  mydiary_users WHERE id=%s" % (data['id'])
             database_connection.cursor.execute(sql)
             current_user = database_connection.cursor.fetchone()
         except Exception as ex:
@@ -148,7 +148,7 @@ def create_entry(current_user):
     if not isinstance(creation_date, str):
         return jsonify({"message": "Update  should be string and of same day as create date"})
 
-    result = database_connection.post_entry(current_user,
+    result = database_connection.post_entry(current_user[2],
                                             tittle,
                                             body,
                                             creation_date
@@ -157,18 +157,11 @@ def create_entry(current_user):
 
 
 @app.route('/api/v1/entries', methods=['GET'])
-def available_entries():
+@token_required
+def available_entries(current_user):
     """ Retrieves all the available entry written """
     result = database_connection.get_entries()
     return result
-
-
-@app.route('/api/v1/entries', methods=['GET'])
-@token_required
-def user_entries(current_user):
-    """ Retrieves all the available entry written """
-    result = database_connection.entries_written(current_user)
-    return jsonify({"{}'s entry written".format(current_user[""]): result})
 
 
 @app.route('/api/v1/entries/<entry_id>', methods=['GET'])

@@ -16,11 +16,12 @@ API end points
 '''
 @app.route('/api/v1/entries',methods=['GET'])
 def get_all_entries():
-    return jsonify({'Entries':Entry.entries}),200
+    return jsonify({'Entries Cretated':Entry.entries}),200
 
 @app.route('/api/v1/entries/<entryId>',methods=['GET'])
 def get_entry(entryId):
-    entryy = [ entry for entry in Entry.entries if (entry['id'] == entryId) ] 
+    entryy = [ entry for entry in Entry.entries if (entry['id'] == entryId) ]
+    print (entryy)
     return jsonify({'entry':entryy}),200
 
 @app.route('/api/v1/entries/<entryId>',methods=['PUT'])
@@ -75,4 +76,4 @@ def create_entry():
         return error
     elif 'tittle' and 'body' and 'id' and 'date' in data:
         Entry.entries.append(dat)
-        return jsonify(dat),201
+        return jsonify({"message":"Entry Created"},dat),201

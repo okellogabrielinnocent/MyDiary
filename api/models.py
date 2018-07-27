@@ -2,7 +2,7 @@ from flask import jsonify
 import os
 import re
 from flask import Flask, jsonify, request
-from utilities.validations import ValidateInputs
+"""from utilities.validations import ValidateInputs"""
 
 class Entry:
     '''

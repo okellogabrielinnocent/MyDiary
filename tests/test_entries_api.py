@@ -20,6 +20,20 @@ class TestEntries(TestBase):
                                     date ="2018-07-24")), 
                                     content_type='application/json')
         self.assertEqual(response.status_code, 201)
+        
+
+    def test_tittle_false(self):
+        """test to create an entry"""
+        
+        response = self.client.post('/api/v1/entries', 
+                                    data=json.dumps(
+                                    dict(id=1, tittle=None, body="This content body",
+                                    date ="2018-07-24")), 
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+
+    
 
 
 
@@ -132,4 +146,5 @@ class TestEntries(TestBase):
         
         if 'date' in data : 
             en[0]['date'] = data['date']'''
-        
+    
+    

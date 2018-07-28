@@ -3,7 +3,9 @@ import unittest
 import json
 import jwt
 
-""" Variable for encoding and decoding web token """
+""" 
+Variable for encoding and decoding web token 
+"""
 JWT_SECRET = 'secret'
 JWT_ALGORITHM = 'HS256'
 
@@ -16,8 +18,8 @@ class Diary(unittest.TestCase):
     def setUp(self):
         # views.app.config['TESTING'] = True
         self.app = views.app.test_client()
-        self.cur = views.database_connection
-        views.database_connection.create_tables()
+        self.cur = views.db_connection
+        views.db_connection.create_tables()
 
         # --------***** Creating users ********------------------
 
@@ -82,20 +84,20 @@ class Diary(unittest.TestCase):
 
         self.entry_1 = {"tittle": "Andela",
                        "body": "It's time to join the Andela community",
-                       "creation_date": "21st/06/2018",
+                       "creation_date": "2018-07-28",
                        "update_date": "1st/06/2018"
                        }
 
         self.entry_2 = {"tittle": "Growth Mindset",
                        "body": "Andela",
-                       "creation_date": "21st/06/2018",
+                       "creation_date": "2018-07-28",
                        "update_date": "1st/06/2018"
                        }
         
 
         self.entry_400 = {"tittle_400": "Growth Mindset",
                          "body_400": "Andela",
-                         "creation_date": "21st/06/2018",
+                         "creation_date": "2018-07-28",
                          "update_date": "1st/06/2018",
                          }
 

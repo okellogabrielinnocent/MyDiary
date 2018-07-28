@@ -1,6 +1,6 @@
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
-from .sql import tables_list
+from .sql import tables
 import jwt
 from flask import jsonify
 import os
@@ -40,7 +40,7 @@ class Database(object):
         """ 
         Create database tables
         """
-        for data in tables_list:
+        for data in tables:
             for table_name in data:
                 self.cursor.execute(data[table_name])
 
@@ -121,7 +121,7 @@ class Database(object):
             return jsonify({"Message": "Username or password is incorrect"})
     
 
-    def get_all_users(self):
+    def get_users(self):
         """ Returns a list of all users in the database """
 
         select_query = "SELECT * FROM mydiary_users"
@@ -175,7 +175,7 @@ class Database(object):
             entry_info['entry_id'] = entry[4]
 
             entries_list.append(entry_info)
-        return jsonify({"Entries": entries_list})
+        return jsonify({"Entries": entries_list}),200
 
 
     def get_user_info(self, user_id):
@@ -195,17 +195,17 @@ class Database(object):
         return user
 
     def entry_details(self, entry_id):
-        """ Returns the details of a entry whose entry_id is provided
-            Also contains the user information
+        """ 
+        Returns the details of a entry with user details whose id is provided
         """
 
         sql = "SELECT tittle, body, creation_date, update_date, " \
-              "user_id FROM mydiary_entries WHERE id=%s" % entry_id
+              "user_id FROM mydiary_entry WHERE id=%s" % entry_id
 
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
         if not result:
-            return jsonify({"Message": "The entry with entry_id {} does not exist".format(entry_id)})
+            return jsonify({"Message": "The entry with entry id {} does not exist".format(entry_id)})
 
         entry_info = {}
         for info in result:
@@ -213,7 +213,6 @@ class Database(object):
             user_id = info[4]
             user_info = self.get_user_info(user_id)
             entry_info['user details'] = user_info
-
             entry_info['tittle'] = info[0]
             entry_info['body'] = info[1]
             entry_info['creation_date'] = info[2]

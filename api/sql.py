@@ -1,4 +1,4 @@
-tables_list = [
+tables = [
     {
         "mydiary_users": """
 

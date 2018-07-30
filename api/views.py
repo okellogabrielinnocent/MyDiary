@@ -17,6 +17,7 @@ JWT_ALGORITHM = 'HS256'
 create an instance of the Database 
 """
 db_connection = Database()
+today = str(date.today())
 
 
 def token_required(f):
@@ -130,7 +131,7 @@ def create_entry(current_user):
     Creating a entry with auto date 
     """
     
-    today = str(date.today())
+    
     request.json['creation_date'] = today
 
     tittle = request.json['tittle']
@@ -171,10 +172,62 @@ def get_single_entry(current_user, entry_id):
     try:
         entry_id = int(entry_id)
     except:
-        return jsonify({"message": "Input should be integer"})
+        return jsonify({"message": "Entry id should be integer"})
 
     if not isinstance(entry_id, int):
-        return jsonify({"message": "Input should integer"})
+        return jsonify({"message": "Entry id should integer"})
     else:
         result = db_connection.entry_details(entry_id)
         return result
+
+@app.route('/api/v1/entries/<entry_id>',methods=['PUT'])
+@token_required
+def update_entry(current_user,entry_id):
+    try:
+        id = int(entry_id)
+    except ValueError as errr:
+        return jsonify(
+            {"message": "Entry_id should be of type integer"}
+        )
+
+    if not request.json or 'tittle' not in request.json:
+        return jsonify({"message":"You can only edit title and body"}), 400
+
+    request.json['creation_date'] = today
+    tittle = request.json['tittle']
+    body = request.json['body']
+    creation_date = request.json['creation_date']   
+
+    result = db_connection.update_to_entry(current_user[0], entry_id, tittle, body,creation_date)
+    return result
+
+"""
+
+@app.route('/api/v1/entries/<entryId>',methods=['PUT'])
+@token_required
+def update_entry(entryId):
+    data = request.get_json()
+    ''' 
+    generate date
+    '''
+    today = str(date.today())
+    data['date'] = today
+    en = [ entry for entry in Entry.entries if (entry['id'] == entryId) ]
+    if  not 'tittle' in data:
+        error = 'Please you entered wrong tittle'
+        return error
+    elif 'tittle' in data:
+        en[0]['tittle'] = data['tittle']
+
+    if not 'body' in data:
+        error = 'Please you entered wrong body'
+        return error    
+    elif 'body' in data:
+        en[0]['body'] = data['body']
+
+    
+    if 'date' in data : 
+        en[0]['date'] = data['date']
+    return jsonify({'entry':en}),200
+    
+"""

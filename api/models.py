@@ -17,7 +17,7 @@ class Database(object):
 
     def __init__(self):
         """ Initialising a database connection """
-        if os.getenv('APP_SETTINGS') == "testing":
+        if os.getenv('APP_SETTINGS') == "test":
             self.dbname = "test_db"
         else:
             self.dbname = "mydiary"
@@ -219,3 +219,51 @@ class Database(object):
             entry_info['update_date'] = info[3]
 
         return jsonify({"entry details": entry_info})
+        
+
+    def update_to_entry(self,
+                           current_user,
+                           entry_id,
+                           tittle,
+                           body,
+                           creation_date
+                           ):
+        # check for the presence of that entry id
+        sql = "SELECT tittle, body, creation_date, " \
+              "user_id FROM mydiary_entry WHERE id=%s" % entry_id
+        self.cursor.execute(sql)
+
+        result = self.cursor.fetchall()
+        if not result:
+            return jsonify(
+                {
+                    "message": "No entry with id ({})".format(id)
+                }
+            )
+
+        # getting the entry_id to the entry where the entry was made
+        # result is of length one
+        entry_id = result[0][-1]
+
+        # ensure that the current user actually created that entry
+        sql = "SELECT tittle, body, creation_date, " \
+              "user_id FROM mydiary_entry WHERE id=%s" % entry_id
+
+        self.cursor.execute(sql)
+        result = self.cursor.fetchall()
+
+        if not result:
+            return jsonify(
+                {
+                 "message":
+                 "Sorry, you are only allowed to react to entry you created"
+                }
+            )
+        '''sql = "UPDATE mydiary_entry SET tittle={} ,body= {} WHERE id={}"\
+              .format(tittle, body, id)'''
+
+        sql =  "UPDATE public.mydiary_entry SET tittle=?, body=?, creation_date=?, update_date=? WHERE id=%s" % entry_id
+
+        self.cursor.execute(sql)
+
+        return jsonify({"message": "Ride entry successfully {}"})

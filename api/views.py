@@ -198,36 +198,5 @@ def update_entry(current_user,entry_id):
     body = request.json['body']
     creation_date = request.json['creation_date']   
 
-    result = db_connection.update_to_entry(current_user[0], entry_id, tittle, body,creation_date)
+    result = db_connection.update_to_entry(current_user[2], entry_id, tittle, body,creation_date)
     return result
-
-"""
-
-@app.route('/api/v1/entries/<entryId>',methods=['PUT'])
-@token_required
-def update_entry(entryId):
-    data = request.get_json()
-    ''' 
-    generate date
-    '''
-    today = str(date.today())
-    data['date'] = today
-    en = [ entry for entry in Entry.entries if (entry['id'] == entryId) ]
-    if  not 'tittle' in data:
-        error = 'Please you entered wrong tittle'
-        return error
-    elif 'tittle' in data:
-        en[0]['tittle'] = data['tittle']
-
-    if not 'body' in data:
-        error = 'Please you entered wrong body'
-        return error    
-    elif 'body' in data:
-        en[0]['body'] = data['body']
-
-    
-    if 'date' in data : 
-        en[0]['date'] = data['date']
-    return jsonify({'entry':en}),200
-    
-"""

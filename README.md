@@ -11,10 +11,14 @@
 
 **API end points**
 
-- GET /api/v1/entries (gets all entries)
-- GET /api/v1/entries/<entryId> (get entry by id)
+- POST /api/v1/auth/signup (Creates new user with POST method)
+- POST /api/v1/auth/login (Logs in user with username and password)
+- GET /api/v1/users(List all users uder that user id)
+- POST /api/v1/entries(Creates new entry)
+- GET /api/v1/entries (Gets all entries)
+- GET /api/v1/entries/<entryId> (Gets entry by id)
 - PUT /api/v1/entries/<entryId> (Updates entry of given id)
-- POST /api/v1/entries (Creates new entry with POST method)
+
 
 **Getting Started**
 
@@ -28,18 +32,26 @@ Below are the things you need to get the project up and running.
 - python3: Language used to develop the api
 - pip: A python package used to install project requirements specified in the requirements text file.
 
+ **Set Up database**
+ - Download and install postgresSQL
+ - Create database and name it mydiary
+ 
 **Installing the project**
 
-Type: 
-        
+Type:        
        "https://github.com/okellogabrielinnocent/MyDiary.git"
   in the terminal or git bash or command prompt.
-
+- Install the virtual enviroment with virtualenv env
+- change directory to virtual enviroment with cd env
+- change directory to virtual enviroment with cd Scripts
+- Type "activate" to activate virtual environment
+- Change directory back to folder by typing cd.. (*2)
+- Install requirements
 To install the requirements. run:
 
       pip install -r requirements.txt
 
-cd to the folder ride-my-way
+cd to the folder mydiary
 And from the root of the folder, type:
       
       python run.py

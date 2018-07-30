@@ -55,7 +55,7 @@ class Database(object):
         row = self.cursor.fetchall()
         for result in row:
             if result[0] == username:
-                return jsonify({"message": "Username already used, use another"})
+                return jsonify({"message": "Username already taken, try another"})
             if result[1] == email:
                 return jsonify({"message": "Email already used"})
             if result[2] == phone_number:
@@ -219,7 +219,6 @@ class Database(object):
             entry_info['update_date'] = info[3]
 
         return jsonify({"entry details": entry_info})
-        
 
     def update_to_entry(self,
                            current_user,
@@ -229,15 +228,15 @@ class Database(object):
                            creation_date
                            ):
         # check for the presence of that entry id
-        sql = "SELECT tittle, body, creation_date, " \
-              "user_id FROM mydiary_entry WHERE id=%s" % entry_id
+        sql = "SELECT tittle,body,creation_date, user_id FROM mydiary_entry WHERE id={}"\
+              .format(entry_id)
         self.cursor.execute(sql)
 
         result = self.cursor.fetchall()
         if not result:
             return jsonify(
                 {
-                    "message": "No entry with id ({})".format(id)
+                    "message": "No entry with id {}".format(entry_id)
                 }
             )
 
@@ -246,24 +245,18 @@ class Database(object):
         entry_id = result[0][-1]
 
         # ensure that the current user actually created that entry
-        sql = "SELECT tittle, body, creation_date, " \
-              "user_id FROM mydiary_entry WHERE id=%s" % entry_id
+        sql = "SELECT * FROM mydiary_entry WHERE id={} AND user_id={}"\
+              .format(entry_id, current_user)
 
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
         if not result:
-            return jsonify(
-                {
-                 "message":
-                 "Sorry, you are only allowed to react to entry you created"
-                }
-            )
-        '''sql = "UPDATE mydiary_entry SET tittle={} ,body= {} WHERE id={}"\
-              .format(tittle, body, id)'''
+            return jsonify({"message":"Sorry, you are only allowed update entry you created"})
 
-        sql =  "UPDATE public.mydiary_entry SET tittle=?, body=?, creation_date=?, update_date=? WHERE id=%s" % entry_id
+        sql = "UPDATE mydiary_entry SET tittle='{}',body='{}', creation_date='{}' WHERE id={}"\
+              .format(tittle, body, creation_date, entry_id)
 
         self.cursor.execute(sql)
 
-        return jsonify({"message": "Ride entry successfully {}"})
+        return jsonify({"message": "Entry with id {} updated successfully".format(entry_id)}),200

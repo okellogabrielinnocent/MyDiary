@@ -7,12 +7,14 @@ from datetime import date
 
 app = Flask(__name__)
 
-""" Variable for encoding and decoding web token """
+""" 
+Variables for encoding and decoding web token 
+"""
 JWT_SECRET = 'secret'
 JWT_ALGORITHM = 'HS256'
 
-"""creating an instance of the Database table
-   used o execute run methods in the models.py
+"""
+create an instance of the Database 
 """
 database_connection = Database()
 
@@ -24,6 +26,9 @@ def token_required(f):
         token = None
 
         if 'Authorization' in request.headers:
+            '''token = request.headers['Authorization']
+            Pass token to the header
+            '''
             token = request.headers.get('Authorization')
 
         if not token:
@@ -33,12 +38,11 @@ def token_required(f):
         try:
             data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
-            sql = "SELECT username, password FROM  mydairy_users WHERE id=%s" % (data['id'])
+            sql = "SELECT username, password FROM  mydiary_users WHERE id=%s" % (data['id'])
             database_connection.cursor.execute(sql)
             current_user = database_connection.cursor.fetchone()
         except Exception as ex:
-            print(Exception)
-            return jsonify({"Bad token": str(ex)})
+            return jsonify({"Bad token message": str(ex)})
 
         return f(current_user, *args, **kwargs)
     return decorated
@@ -60,7 +64,7 @@ def create_user():
             "password" not in request.json):
 
         return jsonify(
-            {"message": "You have either missed out some info or used wrong keys"}
+            {"message": "Please add all infromation"}
         ), 400
 
     name = request.json["name"]
@@ -91,13 +95,13 @@ def login():
             "username" not in request.json or
             "password" not in request.json):
         return jsonify(
-            {"message": "You have either missed out some info or used wrong keys"}
+            {"message": "Please Fill in all the correct information"}
         ), 400
 
     username = request.json['username']
     password = request.json['password']
 
-    # sign_in now
+    # sign_in now by calling the sign in message
     result = database_connection.sign_in(username, password)
     return result
 
@@ -106,50 +110,49 @@ def login():
 @app.route('/api/v1/users', methods=['GET'])
 @token_required
 def list_of_users(current_user):
-    """ Get all users"""
+    """ Get all users from databse"""
     result = database_connection.get_all_users()
-    return jsonify({"Users": result})
+    return jsonify({"Avilable users": result})
 
-'''@app.route('/api/v1/users/entries', methods=['POST'])
+@app.route('/api/v1/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
     
     
     if (not request.json or
             "body" not in request.json or
-            "creation_date" not in request.json or
-            "update_date" not in request.json or
             "tittle" not in request.json):
 
         return jsonify(
-            {"message": "You have either missed out some info or used wrong keys"}
+            {"message": "Please use correct information"}
         ), 400
-        """ Creating a entry offer """
-        
-        today = str(date.today())
-        request.json['creation_date'] = today
+    """
+    Creating a entry with auto date 
+    """
+    
+    today = str(date.today())
+    request.json['creation_date'] = today
 
-        tittle = request.json['tittle']
-        update_date = request.json['update_date']
-        creation_date = request.json['creation_date']
-        body = request.json['body']
+    tittle = request.json['tittle']
+    body = request.json['body']
+    creation_date = request.json['creation_date']
 
     # validations
 
     if not isinstance(body, str):
-        return jsonify({"message": "body should be string"})
+        return jsonify({"message": "Body should be string"})
 
-    if not isinstance(update_date, str):
-        return jsonify({"message": "Start date should be string"})
+    '''if not isinstance(update_date, str):
+        return jsonify({"message": "Creation date should be string"})'''
 
     if not isinstance(creation_date, str):
-        return jsonify({"message": "Update date should be string and of same day as create date"})
+        return jsonify({"message": "Update  should be string and of same day as create date"})
 
-    result = database_connection.create_entryy(current_user[0],
+    result = database_connection.post_entry(current_user,
                                             tittle,
                                             body,
-                                            update_date,
-                                            creation_date)
+                                            creation_date
+                                            )
     return jsonify({"message": result})
 
 
@@ -181,4 +184,4 @@ def get_single_entry(current_user, entry_id):
         return jsonify({"message": "Input should integer"})
     else:
         result = database_connection.entry_details(entry_id)
-        return result'''
+        return result

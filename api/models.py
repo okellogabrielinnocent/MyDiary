@@ -1,6 +1,6 @@
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
-from .database_tables import tables_list
+from .sql import tables_list
 import jwt
 from flask import jsonify
 import os
@@ -14,14 +14,6 @@ JWT_EXP_DELTA_SECONDS = 9000
 
 
 class Database(object):
-    """
-
-    Creates database connection and tables
-    Has methods associated with database objects like
-    users, entries and entry requests
-    The methods are called from the views.py file
-
-    """
 
     def __init__(self):
         """ Initialising a database connection """
@@ -46,7 +38,9 @@ class Database(object):
             print("Can not establish a database connection")
 
     def create_tables(self):
-        """ Create database tables from the database_tables.py file """
+        """ 
+        Create database tables
+        """
         for data in tables_list:
             for table_name in data:
                 self.cursor.execute(data[table_name])
@@ -56,21 +50,17 @@ class Database(object):
                          email,
                          phone_number
                          ):
-        """ 
-        Is a helper function that is called by other functions
-        to ensure username and phone_number are unique
-        """
-
+        
         select_query = "SELECT username, email, phone_number FROM mydiary_users"
         self.cursor.execute(select_query)
         row = self.cursor.fetchall()
         for result in row:
             if result[0] == username:
-                return jsonify({"message": "Username already taken, try another"})
+                return jsonify({"message": "Username already used, use another"})
             if result[1] == email:
-                return jsonify({"message": "User account with that email already exists"})
+                return jsonify({"message": "Email already used"})
             if result[2] == phone_number:
-                return jsonify({"message": "User account with that phone number already exists"})
+                return jsonify({"message": "Phone number already used"})
 
     def signup(self,
                name,
@@ -99,38 +89,42 @@ class Database(object):
                                  bio, gender, hashed_password)
                                 )
         except Exception as err:
-            return jsonify({"message": "Username, email or phone_number already used "})
+            return jsonify({"message": "username, email or phone_number already used "})
         return jsonify({"message": "Account successfully created"})
 
     def sign_in(self, username, password):
         
-        """ A sign a web token to current user if username and password match """
+        """ 
+        ceat web token in username and password is correct 
+        """
         try:
             # query the user table for the username and password
-            select_query = "SELECT username, password, id FROM mydiary_users"
-            self.cursor.execute(select_query)
+            query_user = "SELECT username, password, id FROM mydiary_users"
+            self.cursor.execute(query_user)
             result = self.cursor.fetchall()
         except Exception as err:
             return str(err)
 
-        # assigning a web token if info right
-        for data in result:
-            if data[0] == username and check_password_hash(data[1], password):
+        '''
+        Assigning a web token if user info right to user_id =id
+        '''
+        for user_data in result:
+            if user_data[0] == username and check_password_hash(user_data[1], password):
                 payload = {
-                    'id': data[2],
+                    'id': user_data[2],
                     'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
                 }
                 token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
                 return jsonify({"Message": token.decode('UTF-8')})
 
         else:
-            return jsonify({"Message": "Email or password is incorrect"})
+            return jsonify({"Message": "Username or password is incorrect"})
     
 
     def get_all_users(self):
         """ Returns a list of all users in the database """
 
-        select_query = "SELECT name, username, email, phone_number,gender, password,id FROM mydiary_users"
+        select_query = "SELECT * FROM mydiary_users"
         self.cursor.execute(select_query)
         results = self.cursor.fetchall()
 
@@ -144,42 +138,26 @@ class Database(object):
             user_details['phone_number'] = user[3]
             user_details['gender'] = user[4]
             user_details['password'] = user[5]
-            user_details['id'] = user[6]
 
             user_list.append(user_details)
 
         return user_list
 
-    def create_entryy(self,
-                    user_id,
-                    tittle,
-                    body,
-                    creation_date,
-                    update_date
-                    ):
-        """ Creates entry in the database
-            The user_id which is a foreign key is gotten from
-            the current_user instance in the token_required()
-            decorator as id
-        """
+    def post_entry(self,user_id,tittle,body,creation_date):
+        
         try:
-            sql = "INSERT INTO mydiary_entry(user_id, " \
-                                             "tittle, " \
-                                             "body, " \
-                                             "creation_date, " \
-                                             "update_date, " \
-                                             "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO mydiary_entry(user_id,tittle, body, creation_date) " \
+                                             "VALUES (%s, %s, %s, %s)"
             self.cursor.execute(
                                 sql,
-                                (user_id, tittle, body, creation_date,
-                                 update_date)
+                                (user_id, tittle, body, creation_date)
                                 )
         except psycopg2.Error as err:
             return str(err)
         return "Entry created successfully"
 
     def get_entries(self):
-        """ Returns a list of all entry offers available """
+        """ Returns a list of all entries created """
 
         sql = "SELECT tittle, body, creation_date, update_date, " \
               "id FROM mydiary_entry"
@@ -239,7 +217,7 @@ class Database(object):
         return user
 
     def entry_details(self, entry_id):
-        """ Returns the details of a entry offer with the entry_id provided
+        """ Returns the details of a entry whose entry_id is provided
             Also contains the user information
         """
 
@@ -249,7 +227,7 @@ class Database(object):
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
         if not result:
-            return jsonify({"Message": "The entry offer with entry_id {} does not exist".format(entry_id)})
+            return jsonify({"Message": "The entry with entry_id {} does not exist".format(entry_id)})
 
         entry_info = {}
         for info in result:

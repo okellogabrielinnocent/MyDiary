@@ -1,6 +1,6 @@
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
-from .sql import tables_list
+from .sql import tables
 import jwt
 from flask import jsonify
 import os
@@ -17,13 +17,13 @@ class Database(object):
 
     def __init__(self):
         """ Initialising a database connection """
-        if os.getenv('APP_SETTINGS') == "testing":
+        if os.getenv('APP_SETTINGS') == "test":
             self.dbname = "test_db"
         else:
             self.dbname = "mydiary"
 
         try:
-            # establishing a server connection
+            # establish a server connection
             self.connection = psycopg2.connect(dbname="{}".format(self.dbname),
                                                user="postgres",
                                                password="moschinogab19",
@@ -31,21 +31,20 @@ class Database(object):
                                                )
             self.connection.autocommit = True
 
-            # activate connection cursor
+            # call connection cursor
             self.cursor = self.connection.cursor()
         except psycopg2.Error as err:
-            # bug in returning under the __init__
             print("Can not establish a database connection")
 
     def create_tables(self):
         """ 
         Create database tables
         """
-        for data in tables_list:
+        for data in tables:
             for table_name in data:
                 self.cursor.execute(data[table_name])
 
-    def should_be_unique(self,
+    def validate(self,
                          username,
                          email,
                          phone_number
@@ -56,7 +55,7 @@ class Database(object):
         row = self.cursor.fetchall()
         for result in row:
             if result[0] == username:
-                return jsonify({"message": "Username already used, use another"})
+                return jsonify({"message": "Username already taken, try another"})
             if result[1] == email:
                 return jsonify({"message": "Email already used"})
             if result[2] == phone_number:
@@ -73,8 +72,8 @@ class Database(object):
                ):
 
         # Check if username, email and phone_number don't exist
-        if self.should_be_unique(username, email, phone_number):
-            return self.should_be_unique(username, email, phone_number)
+        if self.validate(username, email, phone_number):
+            return self.validate(username, email, phone_number)
 
         # hash the password
         hashed_password = generate_password_hash(password, method="sha256")
@@ -109,6 +108,7 @@ class Database(object):
         Assigning a web token if user info right to user_id =id
         '''
         for user_data in result:
+            print(user_data)
             if user_data[0] == username and check_password_hash(user_data[1], password):
                 payload = {
                     'id': user_data[2],
@@ -121,7 +121,7 @@ class Database(object):
             return jsonify({"Message": "Username or password is incorrect"})
     
 
-    def get_all_users(self):
+    def get_users(self):
         """ Returns a list of all users in the database """
 
         select_query = "SELECT * FROM mydiary_users"
@@ -175,30 +175,8 @@ class Database(object):
             entry_info['entry_id'] = entry[4]
 
             entries_list.append(entry_info)
-        return jsonify({"Entries": entries_list})
+        return jsonify({"Entries": entries_list}),200
 
-    def entries_written(self, user_id):
-        """ Returns a list of entries given by the User(user)"""
-        try:
-            sql = "SELECT tittle, body, creation_date, update_date, " \
-                  "id FROM mydiary_entry WHERE " \
-                  "user_id=%s" % user_id
-            self.cursor.execute(sql)
-            result = self.cursor.fetchall()
-        except:
-            return jsonify({"Message": "Some thing went wrong"})
-
-        entries_list = []
-        for entry in result:
-            entry_info = {}
-            entry_info['tittle'] = entry[0]
-            entry_info['body'] = entry[1]
-            entry_info['creation_date'] = entry[2]
-            entry_info['update_date'] = entry[3]
-            entry_info['entry_id'] = entry[4]
-
-            entries_list.append(entry_info)
-        return entries_list
 
     def get_user_info(self, user_id):
         """ Gets the info of the user with the user_id provided"""
@@ -217,17 +195,17 @@ class Database(object):
         return user
 
     def entry_details(self, entry_id):
-        """ Returns the details of a entry whose entry_id is provided
-            Also contains the user information
+        """ 
+        Returns the details of a entry with user details whose id is provided
         """
 
         sql = "SELECT tittle, body, creation_date, update_date, " \
-              "user_id FROM mydiary_entries WHERE id=%s" % entry_id
+              "user_id FROM mydiary_entry WHERE id=%s" % entry_id
 
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
         if not result:
-            return jsonify({"Message": "The entry with entry_id {} does not exist".format(entry_id)})
+            return jsonify({"Message": "The entry with entry id {} does not exist".format(entry_id)})
 
         entry_info = {}
         for info in result:
@@ -235,10 +213,50 @@ class Database(object):
             user_id = info[4]
             user_info = self.get_user_info(user_id)
             entry_info['user details'] = user_info
-
             entry_info['tittle'] = info[0]
             entry_info['body'] = info[1]
             entry_info['creation_date'] = info[2]
             entry_info['update_date'] = info[3]
 
         return jsonify({"entry details": entry_info})
+
+    def update_to_entry(self,
+                           current_user,
+                           entry_id,
+                           tittle,
+                           body,
+                           creation_date
+                           ):
+        # check for the presence of that entry id
+        sql = "SELECT tittle,body,creation_date, user_id FROM mydiary_entry WHERE id={}"\
+              .format(entry_id)
+        self.cursor.execute(sql)
+
+        result = self.cursor.fetchall()
+        if not result:
+            return jsonify(
+                {
+                    "message": "No entry with id {}".format(entry_id)
+                }
+            )
+
+        # getting the entry_id to the entry where the entry was made
+        # result is of length one
+        entry_id = result[0][-1]
+
+        # ensure that the current user actually created that entry
+        sql = "SELECT * FROM mydiary_entry WHERE id={} AND user_id={}"\
+              .format(entry_id, current_user)
+
+        self.cursor.execute(sql)
+        result = self.cursor.fetchall()
+
+        if not result:
+            return jsonify({"message":"Sorry, you are only allowed update entry you created"})
+
+        sql = "UPDATE mydiary_entry SET tittle='{}',body='{}', creation_date='{}' WHERE id={}"\
+              .format(tittle, body, creation_date, entry_id)
+
+        self.cursor.execute(sql)
+
+        return jsonify({"message": "Entry with id {} updated successfully".format(entry_id)}),200

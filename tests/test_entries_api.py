@@ -3,7 +3,9 @@ import unittest
 import json
 import jwt
 
-""" Variable for encoding and decoding web token """
+""" 
+Variable for encoding and decoding web token 
+"""
 JWT_SECRET = 'secret'
 JWT_ALGORITHM = 'HS256'
 
@@ -16,8 +18,8 @@ class Diary(unittest.TestCase):
     def setUp(self):
         # views.app.config['TESTING'] = True
         self.app = views.app.test_client()
-        self.cur = views.database_connection
-        views.database_connection.create_tables()
+        self.cur = views.db_connection
+        views.db_connection.create_tables()
 
         # --------***** Creating users ********------------------
 
@@ -82,20 +84,20 @@ class Diary(unittest.TestCase):
 
         self.entry_1 = {"tittle": "Andela",
                        "body": "It's time to join the Andela community",
-                       "creation_date": "21st/06/2018",
+                       "creation_date": "2018-07-28",
                        "update_date": "1st/06/2018"
                        }
 
         self.entry_2 = {"tittle": "Growth Mindset",
                        "body": "Andela",
-                       "creation_date": "21st/06/2018",
+                       "creation_date": "2018-07-28",
                        "update_date": "1st/06/2018"
                        }
         
 
         self.entry_400 = {"tittle_400": "Growth Mindset",
                          "body_400": "Andela",
-                         "creation_date": "21st/06/2018",
+                         "creation_date": "2018-07-28",
                          "update_date": "1st/06/2018",
                          }
 
@@ -174,7 +176,7 @@ class Diary(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "You have either missed out some info or used wrong keys"})
+                         {"message": "Please add all infromation"})
 
     # ************************* Test Login **********************************
 
@@ -193,7 +195,7 @@ class Diary(unittest.TestCase):
                                    content_type=content_type)
 
         self.assertEqual(response_1.status_code, 200)
-        self.assertEqual(response_1.json, {'Message': 'Email or password is incorrect'})
+        self.assertEqual(response_1.json, {'Message': 'Username or password is incorrect'})
 
     def test_login_2(self):
         """ create a user and login with with username which
@@ -213,7 +215,7 @@ class Diary(unittest.TestCase):
                                  data=json.dumps(self.login_user_2),
                                  content_type=content_type)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'Message': 'Email or password is incorrect'})
+        self.assertEqual(response.json, {'Message': 'Username or password is incorrect'})
 
     def test_login_3(self):
         """ Lets creates a user and then login expect a success """

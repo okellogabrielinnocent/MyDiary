@@ -16,7 +16,8 @@ JWT_ALGORITHM = 'HS256'
 """
 create an instance of the Database 
 """
-database_connection = Database()
+db_connection = Database()
+today = str(date.today())
 
 
 def token_required(f):
@@ -38,9 +39,9 @@ def token_required(f):
         try:
             data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
-            sql = "SELECT username, password FROM  mydiary_users WHERE id=%s" % (data['id'])
-            database_connection.cursor.execute(sql)
-            current_user = database_connection.cursor.fetchone()
+            sql = "SELECT username, password, id FROM  mydiary_users WHERE id=%s" % (data['id'])
+            db_connection.cursor.execute(sql)
+            current_user = db_connection.cursor.fetchone()
         except Exception as ex:
             return jsonify({"Bad token message": str(ex)})
 
@@ -51,7 +52,7 @@ def token_required(f):
 @app.route('/api/v1/auth/signup', methods=['POST'])
 def create_user():
     """ Creating a user account
-        calls the signup() func in models.py
+        calls the signup() function in models.py
     """
 
     if (not request.json or
@@ -65,7 +66,7 @@ def create_user():
 
         return jsonify(
             {"message": "Please add all infromation"}
-        ), 400
+        ), 400 #Bad request
 
     name = request.json["name"]
     email = request.json['email']
@@ -75,7 +76,7 @@ def create_user():
     gender = request.json['gender']
     password = request.json['password']
 
-    result = database_connection.signup(name,
+    result = db_connection.signup(name,
                                         email,
                                         username,
                                         phone_number,
@@ -88,7 +89,7 @@ def create_user():
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
     """ The function confirms the presence of user.
-        It login s in the user by providing a web token
+        It login the user by providing a web token
     """
 
     if (not request.json or
@@ -102,7 +103,7 @@ def login():
     password = request.json['password']
 
     # sign_in now by calling the sign in message
-    result = database_connection.sign_in(username, password)
+    result = db_connection.sign_in(username, password)
     return result
 
 
@@ -110,8 +111,8 @@ def login():
 @app.route('/api/v1/users', methods=['GET'])
 @token_required
 def list_of_users(current_user):
-    """ Get all users from databse"""
-    result = database_connection.get_all_users()
+    """ Get all users from databse by calling get_all"""
+    result = db_connection.get_users()
     return jsonify({"Avilable users": result})
 
 @app.route('/api/v1/entries', methods=['POST'])
@@ -130,7 +131,7 @@ def create_entry(current_user):
     Creating a entry with auto date 
     """
     
-    today = str(date.today())
+    
     request.json['creation_date'] = today
 
     tittle = request.json['tittle']
@@ -148,7 +149,7 @@ def create_entry(current_user):
     if not isinstance(creation_date, str):
         return jsonify({"message": "Update  should be string and of same day as create date"})
 
-    result = database_connection.post_entry(current_user,
+    result = db_connection.post_entry(current_user[2],
                                             tittle,
                                             body,
                                             creation_date
@@ -157,18 +158,11 @@ def create_entry(current_user):
 
 
 @app.route('/api/v1/entries', methods=['GET'])
-def available_entries():
-    """ Retrieves all the available entry written """
-    result = database_connection.get_entries()
-    return result
-
-
-@app.route('/api/v1/entries', methods=['GET'])
 @token_required
-def user_entries(current_user):
+def available_entries(current_user):
     """ Retrieves all the available entry written """
-    result = database_connection.entries_written(current_user)
-    return jsonify({"{}'s entry written".format(current_user[""]): result})
+    result = db_connection.get_entries()
+    return result
 
 
 @app.route('/api/v1/entries/<entry_id>', methods=['GET'])
@@ -178,10 +172,31 @@ def get_single_entry(current_user, entry_id):
     try:
         entry_id = int(entry_id)
     except:
-        return jsonify({"message": "Input should be integer"})
+        return jsonify({"message": "Entry id should be integer"})
 
     if not isinstance(entry_id, int):
-        return jsonify({"message": "Input should integer"})
+        return jsonify({"message": "Entry id should integer"})
     else:
-        result = database_connection.entry_details(entry_id)
+        result = db_connection.entry_details(entry_id)
         return result
+
+@app.route('/api/v1/entries/<entry_id>',methods=['PUT'])
+@token_required
+def update_entry(current_user,entry_id):
+    try:
+        id = int(entry_id)
+    except ValueError as errr:
+        return jsonify(
+            {"message": "Entry_id should be of type integer"}
+        )
+
+    if not request.json or 'tittle' not in request.json:
+        return jsonify({"message":"You can only edit title and body"}), 400
+
+    request.json['creation_date'] = today
+    tittle = request.json['tittle']
+    body = request.json['body']
+    creation_date = request.json['creation_date']   
+
+    result = db_connection.update_to_entry(current_user[2], entry_id, tittle, body,creation_date)
+    return result

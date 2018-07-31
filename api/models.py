@@ -174,7 +174,7 @@ class Database(object):
             entry_info['entry_id'] = entry[4]
 
             entries_list.append(entry_info)
-        return jsonify({"Entries": entries_list}),200
+        return jsonify({"Entries": entries_list})
 
 
     def get_user_info(self, user_id):

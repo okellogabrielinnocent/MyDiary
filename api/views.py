@@ -1,52 +1,12 @@
 from flask import Flask, request, jsonify
 from .models import Database
-from functools import wraps
-import jwt
+from .utils import token_required
 import datetime
 from datetime import date
 
 app = Flask(__name__)
-
-""" 
-Variables for encoding and decoding web token 
-"""
-JWT_SECRET = 'secret'
-JWT_ALGORITHM = 'HS256'
-
-"""
-create an instance of the Database 
-"""
 db_connection = Database()
 today = str(date.today())
-
-
-def token_required(f):
-    """ Restricts access to only logged in i.e users with the right token """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'Authorization' in request.headers:
-            '''token = request.headers['Authorization']
-            Pass token to the header
-            '''
-            token = request.headers.get('Authorization')
-
-        if not token:
-            return jsonify({"message": "Token missing"})
-
-
-        try:
-            data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-            sql = "SELECT username, password, id FROM  mydiary_users WHERE id=%s" % (data['id'])
-            db_connection.cursor.execute(sql)
-            current_user = db_connection.cursor.fetchone()
-        except Exception as ex:
-            return jsonify({"Bad token message": str(ex)})
-
-        return f(current_user, *args, **kwargs)
-    return decorated
 
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
@@ -107,14 +67,6 @@ def login():
     return result
 
 
-
-@app.route('/api/v1/users', methods=['GET'])
-@token_required
-def list_of_users(current_user):
-    """ Get all users from databse by calling get_all"""
-    result = db_connection.get_users()
-    return jsonify({"Avilable users": result})
-
 @app.route('/api/v1/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
@@ -130,15 +82,14 @@ def create_entry(current_user):
     """
     Creating a entry with auto date 
     """
-    
-    
+        
     request.json['creation_date'] = today
 
     tittle = request.json['tittle']
     body = request.json['body']
     creation_date = request.json['creation_date']
 
-    # validations
+    """validations"""
 
     if not isinstance(body, str):
         return jsonify({"message": "Body should be string"})
@@ -162,7 +113,7 @@ def create_entry(current_user):
 def available_entries(current_user):
     """ Retrieves all the available entry written """
     result = db_connection.get_entries()
-    return result
+    return result, 200
 
 
 @app.route('/api/v1/entries/<entry_id>', methods=['GET'])

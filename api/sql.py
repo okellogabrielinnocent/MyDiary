@@ -1,6 +1,4 @@
-tables = [
-    {
-        "mydiary_users": """
+tables = [          """
 
                          CREATE TABLE IF NOT EXISTS mydiary_users(
                          id serial PRIMARY KEY, 
@@ -12,11 +10,8 @@ tables = [
                          gender VARCHAR (10),
                          password VARCHAR (1000))
                          
+                      """,
                       """
-    }
-    ,
-    {
-        "mydiary_entry": """
 
                          CREATE TABLE IF NOT EXISTS mydiary_entry(
                          id serial PRIMARY KEY,
@@ -29,5 +24,4 @@ tables = [
                          )
                             
                          """
-    }
-    ]
+        ]

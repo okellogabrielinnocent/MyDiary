@@ -17,10 +17,10 @@ class Database(object):
 
     def __init__(self):
         """ Initialising a database connection """
-        if os.getenv('APP_SETTINGS') == "test":
-            self.dbname = "test_db"
-        else:
+        if not os.getenv('APP_SETTINGS') == "TESTING":
             self.dbname = "mydiary"
+        else:
+            self.dbname = "test_db"
 
         try:
             # establish a server connection
@@ -41,8 +41,7 @@ class Database(object):
         Create database tables
         """
         for data in tables:
-            for table_name in data:
-                self.cursor.execute(data[table_name])
+            self.cursor.execute(data)
 
     def validate(self,
                          username,
@@ -118,7 +117,7 @@ class Database(object):
                 return jsonify({"Message": token.decode('UTF-8')})
 
         else:
-            return jsonify({"Message": "Username or password is incorrect"})
+            return jsonify({"Message": "Username or password is incorrect"}),400
     
 
     def get_users(self):

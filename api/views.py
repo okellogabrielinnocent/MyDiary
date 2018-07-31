@@ -154,7 +154,7 @@ def create_entry(current_user):
                                             body,
                                             creation_date
                                             )
-    return jsonify({"message": result})
+    return jsonify({"message": result}),201
 
 
 @app.route('/api/v1/entries', methods=['GET'])

@@ -29,7 +29,7 @@ class Diary(unittest.TestCase):
             "name": "tess",
             "email": "okellogabrielinnocent.com",
             "username": "tess",
-            "phone_number": "o756514003",
+            "phone_number": "0756514003",
             "bio": "This is gabriel, software engineer",
             "gender": "Male",
             "password": "innocorp"
@@ -40,7 +40,7 @@ class Diary(unittest.TestCase):
             "name": "tess_2",
             "email": "okellogabrielinnocent@gmail.com",
             "username": "tess_2",
-            "phone_number": "o756514003",
+            "phone_number": "0756514003",
             "bio": "This is gabriel, software engineer",
             "gender": "Male",
             "password": "innocorp"
@@ -104,7 +104,7 @@ class Diary(unittest.TestCase):
 
         
 
-    # ********** Test whether the endpoints are protected ****************
+    """********** Test whether the endpoints are protected ****************"""
 
 
     def test_create_entry_protected(self):
@@ -117,7 +117,7 @@ class Diary(unittest.TestCase):
         self.assertEqual(response.status_code, 404)    
         
 
-    # ************** Test Signup **************************************************
+    """ ************** Test Signup **************************************************"""
 
     def test_create_user_1(self):
             """ Creating a user | supply right data
@@ -128,6 +128,22 @@ class Diary(unittest.TestCase):
                                      content_type=content_type)
 
             self.assertEqual(response.status_code, 200)
+
+
+    def test_create_user(self):
+            """ Creating a user | supply right data
+                expect a error
+            """
+            response = self.app.post("{}auth/signup".format(BASE_URL),
+                                     data=json.dumps(self.user_3),
+                                     content_type=content_type)
+
+            
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json,
+                            {"message": "Please add all infromation"})
+
+            
 
 
     def test_create_user_same_username(self):
@@ -144,8 +160,57 @@ class Diary(unittest.TestCase):
         response = self.app.post("{}auth/signup".format(BASE_URL),
                                  data=json.dumps(self.user_1),
                                  content_type=content_type)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
                          {'message': 'Username already taken, try another'})
+    
+
+    def test_create_user_same_phone(self):
+        """ Creating another user with the same  """
+
+        self.app.post('/api/v1/entries', 
+                    data={
+                        "name": "tess",
+                        "email": "okellogabrielinnocent.com",
+                        "username": "tess",
+                        "phone_number": "0756514003",
+                        "bio": "This is gabriel, software engineer",
+                        "gender": "Male",
+                        "password": "innocorp"
+                        }
+                        )
+        response = self.app.post("{}auth/signup".format(BASE_URL),
+                                 data=json.dumps(self.user_1),
+                                 content_type=content_type)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json,
+                         {"message": "Account successfully created"})
+
+        # Creating another user with the same phone number 
+        response = self.app.post("{}auth/signup".format(BASE_URL),
+                                 data=json.dumps(self.user_2),
+                                 content_type=content_type)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json,
+                         {'message': 'Phone number already used'})
+
+    
+    def test_create_user_same_email(self):
+        """ Creating another user with the same username """
+        response = self.app.post("{}auth/signup".format(BASE_URL),
+                                 data=json.dumps(self.user_1),
+                                 content_type=content_type)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json,
+                         {"message": "Account successfully created"})
+
+        # Creating another user with the same email 
+        response = self.app.post("{}auth/signup".format(BASE_URL),
+                                 data=json.dumps(self.user_1),
+                                 content_type=content_type)
+        self.assertEqual(response.status_code, 200)
 
     def test_create_user_3(self):
         """ Second user instance | all expected to work fine """
@@ -175,6 +240,17 @@ class Diary(unittest.TestCase):
                                      data=json.dumps(self.login_user_400),
                                      content_type=content_type)
         self.assertEqual(response_400.status_code, 400)
+
+    
+    def test_login_route(self):
+        # ---- for bad request ---------------------------
+        """ testing login route"""
+        response_400 = self.app.post("{}/login".format(BASE_URL),
+                                     data=json.dumps(self.login_user_400),
+                                     content_type=content_type)
+        self.assertEqual(response_400.status_code, 404)
+    
+
 
     def test_login_account(self):
         """ Right data but account does not exist """
@@ -469,16 +545,7 @@ class Diary(unittest.TestCase):
         response = self.app.post('{}users/entries'.format(BASE_URL),
                                  data=json.dumps(self.entry_1),
                                  headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.status_code, 404)
-
-        # supply right information
-        response = self.app.post('{}users/entries'.format(BASE_URL),
-                                 data=json.dumps(self.entry_1),
-                                 headers={'Authorization': self.token}, content_type=content_type)
-        # self.assertEqual(response_400.status_code, 400)
-        self.assertEqual(response.status_code, 404)
-        
 
         # check for the number of entries present
         response = self.app.get('{}entries/4'.format(BASE_URL), headers={'Authorization': self.token}, content_type=content_type)
@@ -486,7 +553,7 @@ class Diary(unittest.TestCase):
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.json, {"Message": "The entry with entry id {} does not exist".format(4)})
 
-           
+        
     def tearDown(self):
         sql_entry = "DROP TABLE IF EXISTS mydiary_entry"
         sql = "DROP TABLE IF EXISTS mydiary_users"

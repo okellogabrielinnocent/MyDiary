@@ -541,9 +541,8 @@ class Diary(unittest.TestCase):
                                 headers={'Authorization': self.token}, 
                                 content_type=content_type)
 
-        # self.assertEqual(response_400.status_code, 400)
+        
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'message': 'Entry id should be integer'})
 
     def test_get_single_entry_2(self):
         """ Create a user , login and then create a entry
@@ -630,7 +629,7 @@ class Diary(unittest.TestCase):
 
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.json, {"Message": "The entry with entry id {} does not exist".format(4)})
-
+        
         
     def tearDown(self):
         sql_entry = "DROP TABLE IF EXISTS mydiary_entry"

@@ -58,11 +58,10 @@ class Database(object):
             if result[0] == username:
                 msg = "Username already taken, try another"
                 return msg
-                '''return jsonify({"message": "Username already taken, try another"}), 409'''
+                
             if result[1] == email:
                 msg = "Email already used"
                 return msg
-                '''return jsonify({"message": "Email already used"}), 409'''
         return msg
 
     def validate_entry(self,
@@ -70,20 +69,13 @@ class Database(object):
                          body
                          ):
         
-        select_query = "SELECT tittle, body FROM mydiary_entry"
+        select_query = "SELECT tittle, body FROM mydiary_entry WHERE tittle %s"
         self.cursor.execute(select_query)
-        row = self.cursor.fetchall()
+        row = self.cursor.fetchone()
 
         msg = ""
-        for result in row:
-            if result[0] == tittle:
-                msg ="Title already used. Please change it"
-                return msg
-                #jsonify({"message": "Title already used. Please change it"}), 409
-            if result[1] == body:
-                msg = "Body already used"
-                return msg
-                #jsonify({"message": "Body already used"}), 409
+        if result in row is True:
+            return True
     
 
                 

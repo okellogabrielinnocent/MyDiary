@@ -26,12 +26,18 @@ class Database(object):
         try:
             """establish a server connection"""
             
-            self.connection = psycopg2.connect(dbname="{}".format(self.dbname),
+            """self.connection = psycopg2.connect(dbname="{}".format(self.dbname),
                                                user= "postgres",
                                                password= DB_PASS,
                                                host="localhost"
                                                )
-            self.connection.autocommit = True
+            self.connection.autocommit = True"""
+
+
+            """establish a server connection on heroku"""
+
+            DATABASE_URL = os.environ["DATABASE_URL"]
+            self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
 
             # call connection cursor
             self.cursor = self.connection.cursor()

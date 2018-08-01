@@ -65,7 +65,7 @@ def login():
     """
         
     if  "username" not in request.json:
-        error = 'Username is not defined'
+        error = 'Username not defined'
         return jsonify({"message": error}), 400
     
     if "password" not in request.json:

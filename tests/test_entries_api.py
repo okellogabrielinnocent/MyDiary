@@ -201,8 +201,6 @@ class Diary(unittest.TestCase):
             response = self.app.post("{}auth/signup".format(BASE_URL),
                                      data=json.dumps(self.user_4),
                                      content_type=content_type)
-
-            
             self.assertEqual(response.status_code, 400)
             self.assertEqual(response.json,
                             {"message": "Email is not defined"})
@@ -233,7 +231,7 @@ class Diary(unittest.TestCase):
         self.app.post('/api/v1/entries', 
                     data={
                         "email": "okellogabrielinnocent@gmail.com",
-                        "username": "tessgab"
+                        "username": ""
                         }
                         )
         response = self.app.post("{}auth/signup".format(BASE_URL),

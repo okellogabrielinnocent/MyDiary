@@ -58,5 +58,7 @@ And from the root of the folder, type:
       
 To run the tests and coverage, from the root folder, type: 
         
-        coverage run -m pytest or nose2 -v
+        coverage run -m pytest 
+        or nose2 -v
+        or nosetests -v --with-coverage --cover-package=api
         coverage report

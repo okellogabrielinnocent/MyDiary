@@ -1,52 +1,12 @@
 from flask import Flask, request, jsonify
 from .models import Database
-from functools import wraps
-import jwt
+from .utils import token_required
 import datetime
 from datetime import date
 
 app = Flask(__name__)
-
-""" 
-Variables for encoding and decoding web token 
-"""
-JWT_SECRET = 'secret'
-JWT_ALGORITHM = 'HS256'
-
-"""
-create an instance of the Database 
-"""
 db_connection = Database()
 today = str(date.today())
-
-
-def token_required(f):
-    """ Restricts access to only logged in i.e users with the right token """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'Authorization' in request.headers:
-            '''token = request.headers['Authorization']
-            Pass token to the header
-            '''
-            token = request.headers.get('Authorization')
-
-        if not token:
-            return jsonify({"message": "Token missing"})
-
-
-        try:
-            data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-
-            sql = "SELECT username, password, id FROM  mydiary_users WHERE id=%s" % (data['id'])
-            db_connection.cursor.execute(sql)
-            current_user = db_connection.cursor.fetchone()
-        except Exception as ex:
-            return jsonify({"Bad token message": str(ex)})
-
-        return f(current_user, *args, **kwargs)
-    return decorated
 
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
@@ -55,18 +15,30 @@ def create_user():
         calls the signup() function in models.py
     """
 
-    if (not request.json or
-            "name" not in request.json or
-            "email" not in request.json or
-            "username" not in request.json or
-            "phone_number" not in request.json or
-            "bio" not in request.json or
-            "gender" not in request.json or
-            "password" not in request.json):
+    if  "name" not in request.json:
+        error = 'Please define name and it should be string'
+        return jsonify({"message": error}), 400
+    
+    if "email" not in request.json:
+        error = 'Email is not defined'
+        return jsonify({"message": error}), 400
 
-        return jsonify(
-            {"message": "Please add all infromation"}
-        ), 400 #Bad request
+    if  "username" not in request.json:
+        error = 'Username not defined'
+        return jsonify({"message": error}), 400
+
+    if  "phone_number" not in request.json:
+        error = 'Phone_number not defined'
+        return jsonify({"message": error}), 400
+
+    if  "bio" not in request.json:
+        error = 'Please bio is not defined'
+        return jsonify({"message": error}), 400
+    
+    if "password" not in request.json:
+        error = 'Password not defined'
+        return jsonify({"message": error}), 400
+    
 
     name = request.json["name"]
     email = request.json['email']
@@ -91,13 +63,15 @@ def login():
     """ The function confirms the presence of user.
         It login the user by providing a web token
     """
-
-    if (not request.json or
-            "username" not in request.json or
-            "password" not in request.json):
-        return jsonify(
-            {"message": "Please Fill in all the correct information"}
-        ), 400
+        
+    if  "username" not in request.json:
+        error = 'Username is not defined'
+        return jsonify({"message": error}), 400
+    
+    if "password" not in request.json:
+        error = 'Password not defined'
+        return jsonify({"message": error}), 400
+    
 
     username = request.json['username']
     password = request.json['password']
@@ -107,38 +81,35 @@ def login():
     return result
 
 
-
-@app.route('/api/v1/users', methods=['GET'])
-@token_required
-def list_of_users(current_user):
-    """ Get all users from databse by calling get_all"""
-    result = db_connection.get_users()
-    return jsonify({"Avilable users": result})
-
 @app.route('/api/v1/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
     
+    if  "body" not in request.json:
+        error = 'body is not defined'
+        return jsonify({"message": error}), 400
     
-    if (not request.json or
+    if "tittle" not in request.json:
+        error = 'Tittle not defined'
+        return jsonify({"message": error}), 400
+    """if (not request.json or
             "body" not in request.json or
             "tittle" not in request.json):
 
         return jsonify(
             {"message": "Please use correct information"}
-        ), 400
+        ), 400"""
     """
     Creating a entry with auto date 
     """
-    
-    
+        
     request.json['creation_date'] = today
 
     tittle = request.json['tittle']
     body = request.json['body']
     creation_date = request.json['creation_date']
 
-    # validations
+    """validations"""
 
     if not isinstance(body, str):
         return jsonify({"message": "Body should be string"})
@@ -154,7 +125,7 @@ def create_entry(current_user):
                                             body,
                                             creation_date
                                             )
-    return jsonify({"message": result})
+    return jsonify({"message": result}),201
 
 
 @app.route('/api/v1/entries', methods=['GET'])
@@ -162,7 +133,7 @@ def create_entry(current_user):
 def available_entries(current_user):
     """ Retrieves all the available entry written """
     result = db_connection.get_entries()
-    return result
+    return result, 200
 
 
 @app.route('/api/v1/entries/<entry_id>', methods=['GET'])
@@ -178,11 +149,12 @@ def get_single_entry(current_user, entry_id):
         return jsonify({"message": "Entry id should integer"})
     else:
         result = db_connection.entry_details(entry_id)
-        return result
+        return result, 200
 
 @app.route('/api/v1/entries/<entry_id>',methods=['PUT'])
 @token_required
 def update_entry(current_user,entry_id):
+    
     try:
         id = int(entry_id)
     except ValueError as errr:
@@ -191,7 +163,10 @@ def update_entry(current_user,entry_id):
         )
 
     if not request.json or 'tittle' not in request.json:
-        return jsonify({"message":"You can only edit title and body"}), 400
+        return jsonify({"message":"You can only edit title"}), 400
+    
+    if not request.json or 'body' not in request.json:
+        return jsonify({"message":"You can only edit body"}), 400
 
     request.json['creation_date'] = today
     tittle = request.json['tittle']

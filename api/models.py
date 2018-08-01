@@ -148,28 +148,7 @@ class Database(object):
             return jsonify({"Message": "Username or password is incorrect"}),400
     
 
-    def get_users(self):
-        """ Returns a list of all users in the database """
-
-        select_query = "SELECT * FROM mydiary_users"
-        self.cursor.execute(select_query)
-        results = self.cursor.fetchall()
-
-        user_list = []
-
-        for user in results:
-            user_details = {}
-            user_details['name'] = user[0]
-            user_details['username'] = user[1]
-            user_details['email'] = user[2]
-            user_details['phone_number'] = user[3]
-            user_details['gender'] = user[4]
-            user_details['password'] = user[5]
-
-            user_list.append(user_details)
-
-        return user_list
-
+    
     def post_entry(self,user_id,tittle,body,creation_date):
         
         if self.validate_entry is False:

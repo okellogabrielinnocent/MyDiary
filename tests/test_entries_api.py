@@ -27,7 +27,7 @@ class Diary(unittest.TestCase):
         # first user instance
         self.user_1 = {
             "name": "tess",
-            "email": "okellogabrielinnocent.com",
+            "email": "okellogabrielinnocent@gmail.com",
             "username": "tess",
             "phone_number": "0756514003",
             "bio": "This is gabriel, software engineer",
@@ -40,7 +40,7 @@ class Diary(unittest.TestCase):
             "name": "tess_2",
             "email": "okellogabrielinnocent@gmail.com",
             "username": "tess_2",
-            "phone_number": "0756514003",
+            "phone_number": "0756514000",
             "bio": "This is gabriel, software engineer",
             "gender": "Male",
             "password": "innocorp"
@@ -55,6 +55,54 @@ class Diary(unittest.TestCase):
             "gender_3": "Male",
             "password": "innocorp"
         }
+
+        self.user_4 = {
+            "name": "tess_3",
+            "ema": "okellogabrielinnocent.com",
+            "username": "tess_3",            
+            "phone_number": "0756514000",
+            "bio": "This is gabriel, software engineer",
+            "gender_3": "Male",
+            "password": "innocorp"
+        }
+        self.user_5 = {
+            "name": "tess_3",
+            "email": "okellogabrielinnocent.com",
+            "user": "tess_3",
+            "phone_number": "0756514000",
+            "bio": "This is gabriel, software engineer",
+            "gender_3": "Male",
+            "password": "innocorp"
+        }
+        self.user_6 = {
+            "name": "tess_3",
+            "email": "okellogabrielinnocent.com",
+            "username": "tess_3",
+            "phone_": "0756514000",
+            "bio": "This is gabriel, software engineer",
+            "gender": "Male",
+            "password": "innocorp"
+        }
+        self.user_7 = {
+            "name": "tess_3",
+            "email": "okellogabrielinnocent.com",
+            "username": "tess_3",
+            "phone_number": "0756514000",
+            "bi": "This is gabriel, software engineer",
+            "gender": "Male",
+            "password": "innocorp"
+        }
+
+        self.user_8 = {
+            "name": "tess_3",
+            "email": "okellogabrielinnocent.com",
+            "username": "tess_3",
+            "phone_number": "0756514000",
+            "bio": "This is gabriel, software engineer",
+            "gender": "Male",
+            "passwo": "innocorp"
+        }
+
 
         # ---------------- Testing the user login --------------------
 
@@ -111,10 +159,26 @@ class Diary(unittest.TestCase):
         """ Confirm list_of_users endpoint is protected
             It lists all users in the application
         """
+        response = self.app.post('/api/v1/entries', 
+                            data={
+                                "tittle": "Growth Mindset",
+                                "body": "Andela",
+                                "creation_date": "2018-07-28",
+                                "update_date": "1st/06/2018"
+                                },
+                                content_type=content_type
+
+                                )
+                
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json,
+                         {"message": "Token missing"})
+
         response = self.app.post('{}users/entries'.format(BASE_URL),
                                  content_type=content_type)
 
-        self.assertEqual(response.status_code, 404)    
+        self.assertEqual(response.status_code, 404)
+
         
 
     """ ************** Test Signup **************************************************"""
@@ -130,18 +194,18 @@ class Diary(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
 
 
-    def test_create_user(self):
+    def test_create_user_with_no_email(self):
             """ Creating a user | supply right data
                 expect a error
             """
             response = self.app.post("{}auth/signup".format(BASE_URL),
-                                     data=json.dumps(self.user_3),
+                                     data=json.dumps(self.user_4),
                                      content_type=content_type)
 
             
             self.assertEqual(response.status_code, 400)
             self.assertEqual(response.json,
-                            {"message": "Please add all infromation"})
+                            {"message": "Email is not defined"})
 
             
 
@@ -161,22 +225,15 @@ class Diary(unittest.TestCase):
                                  data=json.dumps(self.user_1),
                                  content_type=content_type)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {'message': 'Username already taken, try another'})
     
 
-    def test_create_user_same_phone(self):
+    def test_validate_user_with_no_username(self):
         """ Creating another user with the same  """
 
         self.app.post('/api/v1/entries', 
                     data={
-                        "name": "tess",
-                        "email": "okellogabrielinnocent.com",
-                        "username": "tess",
-                        "phone_number": "0756514003",
-                        "bio": "This is gabriel, software engineer",
-                        "gender": "Male",
-                        "password": "innocorp"
+                        "email": "okellogabrielinnocent@gmail.com",
+                        "username": "tessgab"
                         }
                         )
         response = self.app.post("{}auth/signup".format(BASE_URL),
@@ -189,28 +246,14 @@ class Diary(unittest.TestCase):
 
         # Creating another user with the same phone number 
         response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_2),
+                                 data=json.dumps(self.login_user_1),
                                  content_type=content_type)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json,
-                         {'message': 'Phone number already used'})
+                         {"message": "Please define name and it should be string"})
 
     
-    def test_create_user_same_email(self):
-        """ Creating another user with the same username """
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"message": "Account successfully created"})
-
-        # Creating another user with the same email 
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
+    
 
     def test_create_user_3(self):
         """ Second user instance | all expected to work fine """
@@ -219,23 +262,56 @@ class Diary(unittest.TestCase):
                                    content_type=content_type)
         self.assertEqual(response_2.status_code, 200)
         self.assertEqual(response_2.json,
-                         {"message": "Account successfully created"})  # length=2
+                         {"message": "Account successfully created"})
 
-    def test_create_user_4(self):
+    def test_create_user_5(self):
         """ Wrong and missing user fields | Should raise and error Message """
         response_3 = self.app.post("{}auth/signup".format(BASE_URL),
-                                   data=json.dumps(self.user_3),
+                                   data=json.dumps(self.user_5),
                                    content_type=content_type)
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "Please add all infromation"})
+                         {"message": "Username not defined"})
 
-    # ************************* Test Login **********************************
+    def test_create_user_6(self):
+        """ Wrong and missing user fields | Should raise and error Message """
+        response_3 = self.app.post("{}auth/signup".format(BASE_URL),
+                                   data=json.dumps(self.user_6),
+                                   content_type=content_type)
+
+        self.assertEqual(response_3.status_code, 400)
+        self.assertEqual(response_3.json,
+                         {"message": "Phone_number not defined"})
+    
+
+    def test_create_user_7(self):
+        """ Wrong and missing user fields | Should raise and error Message """
+        response_3 = self.app.post("{}auth/signup".format(BASE_URL),
+                                   data=json.dumps(self.user_7),
+                                   content_type=content_type)
+
+        self.assertEqual(response_3.status_code, 400)
+        self.assertEqual(response_3.json,
+                         {"message": "Please bio is not defined"})
+    
+
+    def test_create_user_8(self):
+        """ Wrong and missing user fields | Should raise and error Message """
+        response_3 = self.app.post("{}auth/signup".format(BASE_URL),
+                                   data=json.dumps(self.user_8),
+                                   content_type=content_type)
+
+        self.assertEqual(response_3.status_code, 400)
+        self.assertEqual(response_3.json,
+                         {"message": "Password not defined"})
+
+    """************************* Test Login **********************************"""
 
     def test_login_1(self):
-        # ---- for bad request ---------------------------
-        """ Supply wrong data e.g missing fields"""
+        """" ---- for bad request ---------------------------
+        Supply wrong data e.g missing fields"""
+
         response_400 = self.app.post("{}auth/login".format(BASE_URL),
                                      data=json.dumps(self.login_user_400),
                                      content_type=content_type)
@@ -393,6 +469,8 @@ class Diary(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json,
                          {"message": "Account successfully created"})
+
+        
 
     # ************* Test user entries *******************************
 

@@ -28,7 +28,8 @@ omit = venv/*
         */cryptography/*
         */jwt/*
         */psycopg2/*
-        */six.py                
+        */six.py
+        */sql.py               
          
 
 

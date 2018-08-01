@@ -15,18 +15,30 @@ def create_user():
         calls the signup() function in models.py
     """
 
-    if (not request.json or
-            "name" not in request.json or
-            "email" not in request.json or
-            "username" not in request.json or
-            "phone_number" not in request.json or
-            "bio" not in request.json or
-            "gender" not in request.json or
-            "password" not in request.json):
+    if  "name" not in request.json:
+        error = 'Please define name and it should be string'
+        return jsonify({"message": error}), 400
+    
+    if "email" not in request.json:
+        error = 'Email is not defined'
+        return jsonify({"message": error}), 400
 
-        return jsonify(
-            {"message": "Please add all infromation"}
-        ), 400 #Bad request
+    if  "username" not in request.json:
+        error = 'Username not defined'
+        return jsonify({"message": error}), 400
+
+    if  "phone_number" not in request.json:
+        error = 'Phone_number not defined'
+        return jsonify({"message": error}), 400
+
+    if  "bio" not in request.json:
+        error = 'Please bio is not defined'
+        return jsonify({"message": error}), 400
+    
+    if "password" not in request.json:
+        error = 'Password not defined'
+        return jsonify({"message": error}), 400
+    
 
     name = request.json["name"]
     email = request.json['email']
@@ -51,13 +63,15 @@ def login():
     """ The function confirms the presence of user.
         It login the user by providing a web token
     """
-
-    if (not request.json or
-            "username" not in request.json or
-            "password" not in request.json):
-        return jsonify(
-            {"message": "Please Fill in all the correct information"}
-        ), 400
+        
+    if  "username" not in request.json:
+        error = 'Username is not defined'
+        return jsonify({"message": error}), 400
+    
+    if "password" not in request.json:
+        error = 'Password not defined'
+        return jsonify({"message": error}), 400
+    
 
     username = request.json['username']
     password = request.json['password']
@@ -71,14 +85,20 @@ def login():
 @token_required
 def create_entry(current_user):
     
+    if  "body" not in request.json:
+        error = 'body is not defined'
+        return jsonify({"message": error}), 400
     
-    if (not request.json or
+    if "tittle" not in request.json:
+        error = 'Tittle not defined'
+        return jsonify({"message": error}), 400
+    """if (not request.json or
             "body" not in request.json or
             "tittle" not in request.json):
 
         return jsonify(
             {"message": "Please use correct information"}
-        ), 400
+        ), 400"""
     """
     Creating a entry with auto date 
     """
@@ -129,11 +149,12 @@ def get_single_entry(current_user, entry_id):
         return jsonify({"message": "Entry id should integer"})
     else:
         result = db_connection.entry_details(entry_id)
-        return result
+        return result, 200
 
 @app.route('/api/v1/entries/<entry_id>',methods=['PUT'])
 @token_required
 def update_entry(current_user,entry_id):
+    
     try:
         id = int(entry_id)
     except ValueError as errr:
@@ -142,7 +163,10 @@ def update_entry(current_user,entry_id):
         )
 
     if not request.json or 'tittle' not in request.json:
-        return jsonify({"message":"You can only edit title and body"}), 400
+        return jsonify({"message":"You can only edit title"}), 400
+    
+    if not request.json or 'body' not in request.json:
+        return jsonify({"message":"You can only edit body"}), 400
 
     request.json['creation_date'] = today
     tittle = request.json['tittle']

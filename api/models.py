@@ -139,21 +139,16 @@ class Database(object):
     
     def post_entry(self,user_id,title,body,creation_date):
         """method to create an entry"""
+
         try:            
-            sql_query ="""SELECT title, body, user_id  FROM mydiary_entry WHERE user_id = %s OR title = %s AND
-                            body = %s""", (user_id, title, body)
-            self.cursor.execute(sql_query,
-                                    (user_id,
-                                    title,
-                                    body,
-                                    )
-                                    )
+            sql_query ="""SELECT * FROM mydiary_entry WHERE user_id = %s AND title = %s AND
+                            body = %s"""
+            self.cursor.execute(sql_query, (user_id, title, body))
             result = self.cursor.rowcount
             print(result)
             
-            if result > 0:
-                
-                response = jsonify({"message": "Entry already exists"}), 409
+            if result > 0:                
+                response = "Entry already exists"
                 return response
 
         

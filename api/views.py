@@ -85,13 +85,13 @@ def login():
 @token_required
 def create_entry(current_user):
     
-    if  "body" not in request.json:
+    '''if  "body" not in request.json:
         error = 'body is not defined'
         return jsonify({"message": error}), 400
     
     if "title" not in request.json:
         error = 'title not defined'
-    
+    '''
     """
     Creating a entry with auto date 
     """

@@ -149,6 +149,13 @@ class Diary(unittest.TestCase):
                          "creation_date": "2018-07-28",
                          "update_date": "1st/06/2018",
                          }
+        self.entry_11 = {"body": "Things we can do Thhek skudfusibv d;u; ;s;",
+                        "creation_date": "2018-08-02",
+                        "entry_id": 1,
+                        "title": "Wakiso"
+            
+                       }
+                       
 
         
 
@@ -607,8 +614,64 @@ class Diary(unittest.TestCase):
 
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.json, {"Message": "The entry with entry id {} does not exist".format(4)})
+
+
+
+    def test_get_single_entry(self):
+        """ Create a user , login and then create a entry
+            entry id which exist
+         """
+        # Creating a user instance, length is one
+        response = self.app.post("{}auth/signup".format(BASE_URL),
+                                 data=json.dumps(self.user_1),
+                                 content_type=content_type)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json,
+                         {"message": "Account successfully created"})
+
+        # logging the user in
+        response = self.app.post("{}auth/login".format(BASE_URL),
+                                 data=json.dumps(self.login_user_1),
+                                 content_type=content_type)
+        self.assertEqual(response.status_code, 200)
+
+        # capturing the token
+        self.token = response.json['Message']
+        data = jwt.decode(self.token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+
+        sql = "SELECT * FROM  mydiary_users WHERE id=%s" % (data['id'])
+        self.cur.cursor.execute(sql)
+        self.current_user = self.cur.cursor.fetchone()
+
+        # supply right information
+        response = self.app.post('{}users/entries'.format(BASE_URL),
+                                 data=json.dumps(self.entry_1),
+                                 headers={'Authorization': self.token}, content_type=content_type)
+        # self.assertEqual(response_400.status_code, 400)
+        self.assertEqual(response.status_code, 404)
+
+        # supply right information
+        response = self.app.post('{}entries'.format(BASE_URL),
+                                 data=json.dumps(self.entry_1),
+                                 headers={'Authorization': self.token}, content_type=content_type)
+        # self.assertEqual(response_400.status_code, 400)
+        self.assertEqual(response.status_code, 200)
+
+        # check for the number of entries present
+        response = self.app.get('{}entries/<entry_id>'.format(BASE_URL), headers={'Authorization': self.token}, content_type=content_type)
+
+        # self.assertEqual(response_400.status_code, 400)
+        self.assertEqual(len(response.json), 1)
+
+        # supply right information
+        response = self.app.post('{}/entries/1'.format(BASE_URL),
+                                 data=json.dumps(self.entry_11),
+                                 headers={'Authorization': self.token}, content_type=content_type)
+        self.assertEqual(response.status_code, 404)
+
         
-        
+
     def tearDown(self):
         sql_entry = "DROP TABLE IF EXISTS mydiary_entry"
         sql = "DROP TABLE IF EXISTS mydiary_users"

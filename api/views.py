@@ -14,48 +14,49 @@ def create_user():
     """ Creating a user account
         calls the signup() function in models.py
     """
+    try:
+        if  "name" not in request.json:
+            error = 'Please define name and it should be string'
+            return jsonify({"message": error}), 400
+        
+        if "email" not in request.json:
+            error = 'Email is not defined'
+            return jsonify({"message": error}), 400
 
-    if  "name" not in request.json:
-        error = 'Please define name and it should be string'
-        return jsonify({"message": error}), 400
-    
-    if "email" not in request.json:
-        error = 'Email is not defined'
-        return jsonify({"message": error}), 400
+        if  "username" not in request.json:
+            error = 'Username not defined'
+            return jsonify({"message": error}), 400
 
-    if  "username" not in request.json:
-        error = 'Username not defined'
-        return jsonify({"message": error}), 400
+        if  "phone_number" not in request.json:
+            error = 'Phone_number not defined'
+            return jsonify({"message": error}), 400
 
-    if  "phone_number" not in request.json:
-        error = 'Phone_number not defined'
-        return jsonify({"message": error}), 400
+        if  "bio" not in request.json:
+            error = 'Please bio is not defined'
+            return jsonify({"message": error}), 400
+        
+        if "password" not in request.json:
+            error = 'Password not defined'
+            return jsonify({"message": error}), 400
+        
 
-    if  "bio" not in request.json:
-        error = 'Please bio is not defined'
-        return jsonify({"message": error}), 400
-    
-    if "password" not in request.json:
-        error = 'Password not defined'
-        return jsonify({"message": error}), 400
-    
+        name = request.json["name"]
+        email = request.json['email']
+        username = request.json['username']
+        phone_number = request.json['phone_number']
+        bio = request.json['bio']
+        gender = request.json['gender']
+        password = request.json['password']
 
-    name = request.json["name"]
-    email = request.json['email']
-    username = request.json['username']
-    phone_number = request.json['phone_number']
-    bio = request.json['bio']
-    gender = request.json['gender']
-    password = request.json['password']
+        result = db_connection.signup(name,
+                                            email,
+                                            username,
+                                            phone_number,
+                                            bio, gender,
+                                            password)
 
-    result = db_connection.signup(name,
-                                        email,
-                                        username,
-                                        phone_number,
-                                        bio, gender,
-                                        password)
-
-    return result
+        return result
+    except
 
 
 @app.route('/api/v1/auth/login', methods=['POST'])
@@ -96,11 +97,10 @@ def create_entry(current_user):
     Creating a entry with auto date 
     """
         
-    request.json['creation_date'] = today
+    
 
     title = request.json['title']
     body = request.json['body']
-    creation_date = request.json['creation_date']
 
     """validations"""
 
@@ -108,15 +108,16 @@ def create_entry(current_user):
         return jsonify({"message": "Body should be string"})
 
 
-    if not isinstance(creation_date, str):
+    if not isinstance(today, str):
         return jsonify({"message": "Update  should be string and of same day as create date"})
 
     result = db_connection.post_entry(current_user[2],
                                             title,
                                             body,
-                                            creation_date
+                                            today
                                             )
     return jsonify({"message": result}),201
+    print(result)
 
 
 @app.route('/api/v1/entries', methods=['GET'])

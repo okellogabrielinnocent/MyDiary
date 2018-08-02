@@ -13,7 +13,6 @@
 
 - POST /api/v1/auth/signup (Creates new user with POST method)
 - POST /api/v1/auth/login (Logs in user with username and password)
-- GET /api/v1/users(List all users uder that user id)
 - POST /api/v1/entries(Creates new entry)
 - GET /api/v1/entries (Gets all entries)
 - GET /api/v1/entries/<entryId> (Gets entry by id)

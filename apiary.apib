@@ -5,6 +5,8 @@ HOST: https://mydiarry.herokuapp.com/
 MyDiary is an online journal where users can pen down their thoughts and feelings.
 EndPoint | Functionality
 ------------ | -------------
+POST /api/v1/auth/signup|Creates new user
+POST //api/v1/auth/login|Sings in a new user
 GET /entries | Fetch all entries
 GET /entries/<entryId>|Fetch a single entry
 POST /entries|Create an entry
@@ -119,7 +121,7 @@ A user can get all the list of all entries he or she has created
             }
         ]
         
-## Diary Collection [/api/v1/entries/1]
+## Diary Get Entry By ID Collection [/api/v1/entries/1]
 ### List Entries By Entry ID [GET]
 A user can get an entry by entry id  he or she has created
 

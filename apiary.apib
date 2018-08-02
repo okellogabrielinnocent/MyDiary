@@ -135,3 +135,26 @@ A user can get an entry by entry id  he or she has created
                 "update_date": null
             }
         ]
+        
+## Diary Entry Update Collection [/api/v1/entries/2]
+### Update Entry By Id [PUT]
+Using the entry ID the user is able to update and entry and this should only the
+body and title
++ Request (application/json)
+
+        {
+            "title": "andella",
+            "body": "moschinogab19"
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /api/v1/entries/2
+
+    + Body
+
+            {
+                "message": "Entry with id 1 updated successfully"
+            }

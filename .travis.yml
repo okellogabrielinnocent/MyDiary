@@ -16,5 +16,3 @@ script:
   - nosetests -v --with-coverage --cover-package=api
 after_success:
   - coveralls
-before_install:
-  - npm install -g dredd@5.1.11

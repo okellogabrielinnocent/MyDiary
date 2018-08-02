@@ -23,9 +23,9 @@ class Database(object):
     def __init__(self):
         """ Initialising a database connection """
         if not os.getenv('APP_SETTINGS') == "TESTING":
-            self.dbname = "mydiary"
-        else:
             self.dbname = "test_db"
+        else:
+            self.dbname = "mydiary"
 
         try:
             """establish a server connection"""

@@ -16,7 +16,7 @@ content_type = 'application/json'
 class Diary(unittest.TestCase):
     
     def setUp(self):
-        # views.app.config['TESTING'] = True
+        views.app.config['TESTING'] = True
         self.app = views.app.test_client()
         self.cur = views.db_connection
         views.db_connection.create_tables()

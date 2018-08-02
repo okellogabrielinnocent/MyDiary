@@ -1,80 +1,127 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://mydiarry.herokuapp.com/
 
-# okellogabrielinnocent
+# MyDiary
+MyDiary is an online journal where users can pen down their thoughts and feelings. 
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+## Diary Create New User Collection [/api/v1/auth/signup]
 
-## Questions Collection [/questions]
 
-### List All Questions [GET]
+### Create a New User [POST]
 
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+Users can create an account using his email, password, phone number
+This username and password is later used for loging in into the applucation
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "name": "andella",
+            "email": "andella@gmail.com",
+            "username": "andella",
+            "phone_number": "0708500001",
+            "bio": "Great learner",
+            "gender": "Male",
+            "password": "moschinogab19"
         }
 
 + Response 201 (application/json)
 
     + Headers
 
-            Location: /questions/2
+            Location: /api/v1/auth/signup
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
+                "message": "Account successfully created"
+            }
+            
+
+
+## Diary User Login Collection [/api/v1/auth/login]
+### Login User [POST]
+
+By using the username and password created in create new user
+Aperson should be able to generate a token when all his creditials meet the expectiations
+
++ Request (application/json)
+
+        {
+            "username": "andella",
+            "password": "moschinogab19"
+        }
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Location: /auth/login
+
+    + Body
+
+            {
+                "Message": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNTMzMjA3MzkyfQ.ACuyqxBpGbZ3JbMwS3vmOmX4YPT0kEFvZmPHhOvsm7w"
+            }
+            
+## Diary Creation Collection [/api/v1/auth/entries]
+### Create Entry [POST]
+
+By using the token on the header, a user is able to post in his or her new entries in to his diary.
+He can later access the same 
+
++ Request (application/json)
+
+        {
+            "title": "Wawww",
+            "body": "When things are tricky you cool down"
+        }
+        
++ Response 201 (application/json)
+
+    + Headers
+
+            Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNTMzMjA3MzkyfQ.ACuyqxBpGbZ3JbMwS3vmOmX4YPT0kEFvZmPHhOvsm7w
+            
+            
+
+    + Body
+
+            {
+                "message": "Entry created successfully"
+            }
+            
+
+## Diary Collection [/api/v1/entries]
+### List All Entries [GET]
+A user can get all the list of all entries he or she has created
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "Entries": [
                     {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
+                        "body": "When things are tricky you cool down",
+                        "creation_date": "2018-08-02",
+                        "entry_id": 1,
+                        "title": "Wawww",
+                        "update_date": null
                     }
                 ]
             }
+        ]
+        
+## Diary Collection [/api/v1/entries/1]
+### List Entries By Entry ID [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "body": "When things are tricky you cool down",
+                "creation_date": "2018-08-02",
+                "title": "Wawww",
+                "update_date": null
+            }
+        ]

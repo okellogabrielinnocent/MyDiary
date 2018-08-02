@@ -14,49 +14,48 @@ def create_user():
     """ Creating a user account
         calls the signup() function in models.py
     """
-    try:
-        if  "name" not in request.json:
-            error = 'Please define name and it should be string'
-            return jsonify({"message": error}), 400
-        
-        if "email" not in request.json:
-            error = 'Email is not defined'
-            return jsonify({"message": error}), 400
+    
+    if  "name" not in request.json:
+        error = 'Please define name and it should be string'
+        return jsonify({"message": error}), 400
+    
+    if "email" not in request.json:
+        error = 'Email is not defined'
+        return jsonify({"message": error}), 400
 
-        if  "username" not in request.json:
-            error = 'Username not defined'
-            return jsonify({"message": error}), 400
+    if  "username" not in request.json:
+        error = 'Username not defined'
+        return jsonify({"message": error}), 400
 
-        if  "phone_number" not in request.json:
-            error = 'Phone_number not defined'
-            return jsonify({"message": error}), 400
+    if  "phone_number" not in request.json:
+        error = 'Phone_number not defined'
+        return jsonify({"message": error}), 400
 
-        if  "bio" not in request.json:
-            error = 'Please bio is not defined'
-            return jsonify({"message": error}), 400
-        
-        if "password" not in request.json:
-            error = 'Password not defined'
-            return jsonify({"message": error}), 400
-        
+    if  "bio" not in request.json:
+        error = 'Please bio is not defined'
+        return jsonify({"message": error}), 400
+    
+    if "password" not in request.json:
+        error = 'Password not defined'
+        return jsonify({"message": error}), 400
+    
 
-        name = request.json["name"]
-        email = request.json['email']
-        username = request.json['username']
-        phone_number = request.json['phone_number']
-        bio = request.json['bio']
-        gender = request.json['gender']
-        password = request.json['password']
+    name = request.json["name"]
+    email = request.json['email']
+    username = request.json['username']
+    phone_number = request.json['phone_number']
+    bio = request.json['bio']
+    gender = request.json['gender']
+    password = request.json['password']
 
-        result = db_connection.signup(name,
-                                            email,
-                                            username,
-                                            phone_number,
-                                            bio, gender,
-                                            password)
+    result = db_connection.signup(name,
+                                        email,
+                                        username,
+                                        phone_number,
+                                        bio, gender,
+                                        password)
 
-        return result
-    except
+    return result
 
 
 @app.route('/api/v1/auth/login', methods=['POST'])

@@ -139,13 +139,31 @@ class Database(object):
     
     def post_entry(self,user_id,title,body,creation_date):
         """method to create an entry"""
-        try:
-            sql = "INSERT INTO mydiary_entry(user_id,title, body, creation_date) " \
-                                            "VALUES (%s, %s, %s, %s)"
-            self.cursor.execute(
-                                sql,
-                                (user_id, title, body, creation_date)
-                                )
+        try:            
+            sql_query ="""SELECT title, body, user_id  FROM mydiary_entry WHERE user_id = %s OR title = %s AND
+                            body = %s""", (user_id, title, body)
+            self.cursor.execute(sql_query,
+                                    (user_id,
+                                    title,
+                                    body,
+                                    )
+                                    )
+            result = self.cursor.rowcount
+            print(result)
+            
+            if result > 0:
+                
+                response = jsonify({"message": "Entry already exists"}), 409
+                return response
+
+        
+            else:
+                sql = "INSERT INTO mydiary_entry(user_id,title, body, creation_date) " \
+                                             "VALUES (%s, %s, %s, %s)"
+                self.cursor.execute(
+                                    sql,
+                                    (user_id, title, body, creation_date)
+                                    )
         except psycopg2.Error as err:
             return str(err)
         return "Entry created successfully"

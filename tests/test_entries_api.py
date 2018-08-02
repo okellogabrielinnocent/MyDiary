@@ -608,6 +608,12 @@ class Diary(unittest.TestCase):
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.json, {"Message": "The entry with entry id {} does not exist".format(4)})
         
+
+    def test_for_wrong_url(self):
+        """test for wrong url"""
+        response = self.app.get('{}/',
+                              content_type="application/json")
+        self.assertEqual(response.status_code, 404)
         
     def tearDown(self):
         sql_entry = "DROP TABLE IF EXISTS mydiary_entry"

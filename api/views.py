@@ -16,24 +16,24 @@ def create_user():
     """
     
     if  "name" not in request.json:
-        error = 'Please define name and it should be string'
-        return jsonify({"message": error}), 400
+        err = 'Please define name and it should be string'
+        return jsonify({"message": err}), 400
     
     if "email" not in request.json:
-        error = 'Email is not defined'
-        return jsonify({"message": error}), 400
+        erro = 'Email is not defined'
+        return jsonify({"message": erro}), 400
 
     if  "username" not in request.json:
         error = 'Username not defined'
         return jsonify({"message": error}), 400
 
     if  "phone_number" not in request.json:
-        error = 'Phone_number not defined'
-        return jsonify({"message": error}), 400
+        error1 = 'Phone_number not defined'
+        return jsonify({"message": error1}), 400
 
     if  "bio" not in request.json:
-        error = 'Please bio is not defined'
-        return jsonify({"message": error}), 400
+        error2 = 'Please bio is not defined'
+        return jsonify({"message": error2}), 400
     
     if "password" not in request.json:
         error = 'Password not defined'
@@ -63,22 +63,17 @@ def login():
     """ The function confirms the presence of user.
         It login the user by providing a web token
     """
-        
-    if  "username" not in request.json:
-        error = 'Username not defined'
-        return jsonify({"message": error}), 400
     
-    if "password" not in request.json:
-        error = 'Password not defined'
-        return jsonify({"message": error}), 400
-    
+    try:
 
-    username = request.json['username']
-    password = request.json['password']
+        username = request.json['username']
+        password = request.json['password']
 
-    # sign_in now by calling the sign in message
-    result = db_connection.sign_in(username, password)
-    return result
+        # sign_in now by calling the sign in message
+        result = db_connection.sign_in(username, password)
+        return result
+    except Exception as err:
+        return jsonify({"Message": "The {} parameter does not exist".format(str(err))})
 
 
 @app.route('/api/v1/entries', methods=['POST'])
@@ -121,14 +116,11 @@ def get_single_entry(current_user, entry_id):
     """ Retrieve a single entry by providing the entry_id """
     try:
         entry_id = int(entry_id)
-    except:
-        return jsonify({"message": "Entry id should be integer"})
-
-    if not isinstance(entry_id, int):
-        return jsonify({"message": "Entry id should integer"})
-    else:
         result = db_connection.entry_details(entry_id)
         return result, 200
+    except:
+        return jsonify({"message": "Entry id should be integer"})
+    
 
 @app.route('/api/v1/entries/<entry_id>',methods=['PUT'])
 @token_required

@@ -1,5 +1,11 @@
 [![Build Status](https://travis-ci.org/okellogabrielinnocent/MyDiary.svg?branch=master)](https://travis-ci.org/okellogabrielinnocent/MyDiary?branch=develop)
 [![Coverage Status](https://coveralls.io/repos/github/okellogabrielinnocent/MyDiary/badge.svg?branch=challenge3)](https://coveralls.io/github/okellogabrielinnocent/MyDiary?branch=challenge3)
+[![Maintenance](https://img.shields.io/maintenance/yes/2018.svg)](https://codeclimate.com/github/okellogabrielinnocent/MyDiary)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ac11ed19fceb907af12a/maintainability)](https://codeclimate.com/github/okellogabrielinnocent/MyDiary/maintainability)
+[![GitHub issues](https://img.shields.io/github/issues/okellogabrielinnocent/MyDiary.svg)](https://github.com/okellogabrielinnocent/MyDiary/issues)
+
+
+
 # MyDiary
  MyDiary is an online journal where users can pen down their thoughts and feelings.
 

@@ -179,7 +179,6 @@ class Database(object):
             entry_info['title'] = entry[0]
             entry_info['body'] = entry[1]
             entry_info['creation_date'] = entry[2]
-            entry_info['update_date'] = entry[3]
             entry_info['entry_id'] = entry[4]
 
             entries_list.append(entry_info)
@@ -224,7 +223,6 @@ class Database(object):
             entry_info['title'] = info[0]
             entry_info['body'] = info[1]
             entry_info['creation_date'] = info[2]
-            entry_info['update_date'] = info[3]
         
         return jsonify(entry_info)
 

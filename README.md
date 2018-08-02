@@ -10,20 +10,21 @@
 4. Users can add or modify an entry.
 
 **API end points**
-
-- POST /api/v1/auth/signup (Creates new user with POST method)
-- POST /api/v1/auth/login (Logs in user with username and password)
-- GET /api/v1/users(List all users uder that user id)
-- POST /api/v1/entries(Creates new entry)
-- GET /api/v1/entries (Gets all entries)
-- GET /api/v1/entries/<entryId> (Gets entry by id)
-- PUT /api/v1/entries/<entryId> (Updates entry of given id)
+EndPoint | Functionality
+------------ | -------------
+POST /api/v1/auth/signup|Creates new user
+POST //api/v1/auth/login|Signs in a new user
+GET /entries | Fetches all entries
+POST /entries|Create an entry
+GET /entries/<entryId>|Fetch a single entry
+PUT /entries/<entryId>|Modify an entry
 
 
 **Getting Started**
 
 These instructions will enable you to run the project on your local machine.
 Set up postgress
+
 **Prerequisites**
 
 Below are the things you need to get the project up and running.
@@ -31,6 +32,7 @@ Below are the things you need to get the project up and running.
 - git : To update and clone the repository
 - python3: Language used to develop the api
 - pip: A python package used to install project requirements specified in the requirements text file.
+- PostgresSQL installed
 
  **Set Up database**
  - Download and install postgresSQL
@@ -47,6 +49,7 @@ Type:
 - Type "activate" to activate virtual environment
 - Change directory back to folder by typing cd.. (*2)
 - Install requirements
+
 To install the requirements. run:
 
       pip install -r requirements.txt
@@ -58,7 +61,7 @@ And from the root of the folder, type:
       
 To run the tests and coverage, from the root folder, type: 
         
-        coverage run -m pytest 
-        or nose2 -v
-        or nosetests -v --with-coverage --cover-package=api
-        coverage report
+      coverage run -m pytest 
+      or nose2 -v
+      or nosetests -v --with-coverage
+      coverage report

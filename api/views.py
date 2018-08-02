@@ -14,7 +14,7 @@ def create_user():
     """ Creating a user account
         calls the signup() function in models.py
     """
-
+    
     if  "name" not in request.json:
         error = 'Please define name and it should be string'
         return jsonify({"message": error}), 400
@@ -84,20 +84,8 @@ def login():
 @app.route('/api/v1/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
-    
-    if  "body" not in request.json:
-        error = 'body is not defined'
-        return jsonify({"message": error}), 400
-    
-    if "title" not in request.json:
-        error = 'title not defined'
-    
-    """
-    Creating a entry with auto date 
-    """
         
     request.json['creation_date'] = today
-
     title = request.json['title']
     body = request.json['body']
     creation_date = request.json['creation_date']
@@ -116,7 +104,7 @@ def create_entry(current_user):
                                             body,
                                             creation_date
                                             )
-    return jsonify({"message": result}),201
+    return jsonify({"message": result})
 
 
 @app.route('/api/v1/entries', methods=['GET'])

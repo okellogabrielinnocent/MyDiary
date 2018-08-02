@@ -65,7 +65,7 @@ def login():
     """
         
     if  "username" not in request.json:
-        error = 'Username is not defined'
+        error = 'Username not defined'
         return jsonify({"message": error}), 400
     
     if "password" not in request.json:
@@ -89,23 +89,16 @@ def create_entry(current_user):
         error = 'body is not defined'
         return jsonify({"message": error}), 400
     
-    if "tittle" not in request.json:
-        error = 'Tittle not defined'
-        return jsonify({"message": error}), 400
-    """if (not request.json or
-            "body" not in request.json or
-            "tittle" not in request.json):
-
-        return jsonify(
-            {"message": "Please use correct information"}
-        ), 400"""
+    if "title" not in request.json:
+        error = 'title not defined'
+    
     """
     Creating a entry with auto date 
     """
         
     request.json['creation_date'] = today
 
-    tittle = request.json['tittle']
+    title = request.json['title']
     body = request.json['body']
     creation_date = request.json['creation_date']
 
@@ -114,14 +107,12 @@ def create_entry(current_user):
     if not isinstance(body, str):
         return jsonify({"message": "Body should be string"})
 
-    '''if not isinstance(update_date, str):
-        return jsonify({"message": "Creation date should be string"})'''
 
     if not isinstance(creation_date, str):
         return jsonify({"message": "Update  should be string and of same day as create date"})
 
     result = db_connection.post_entry(current_user[2],
-                                            tittle,
+                                            title,
                                             body,
                                             creation_date
                                             )
@@ -162,16 +153,16 @@ def update_entry(current_user,entry_id):
             {"message": "Entry_id should be of type integer"}
         )
 
-    if not request.json or 'tittle' not in request.json:
+    if not request.json or 'title' not in request.json:
         return jsonify({"message":"You can only edit title"}), 400
     
     if not request.json or 'body' not in request.json:
         return jsonify({"message":"You can only edit body"}), 400
 
     request.json['creation_date'] = today
-    tittle = request.json['tittle']
+    title = request.json['title']
     body = request.json['body']
     creation_date = request.json['creation_date']   
 
-    result = db_connection.update_to_entry(current_user[2], entry_id, tittle, body,creation_date)
+    result = db_connection.update_to_entry(current_user[2], entry_id, title, body,creation_date)
     return result

@@ -17,8 +17,8 @@ tables = [          """
                          id serial PRIMARY KEY,
                          user_id INTEGER NOT NULL ,
                          FOREIGN KEY(user_id) REFERENCES mydiary_users(id) ON DELETE CASCADE,
-                         tittle VARCHAR (100) NOT NULL ,
-                         body VARCHAR NOT NULL ,
+                         title VARCHAR (100) NOT NULL,
+                         body VARCHAR NOT NULL,
                          creation_date VARCHAR (12),
                          update_date VARCHAR (12)
                          )

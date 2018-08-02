@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/okellogabrielinnocent/MyDiary.svg?branch=master)](https://travis-ci.org/okellogabrielinnocent/MyDiary?branch=develop)
-[![Coverage Status](https://coveralls.io/repos/github/okellogabrielinnocent/MyDiary/badge.svg?branch=develop)](https://coveralls.io/github/okellogabrielinnocent/MyDiary?)
+[![Coverage Status](https://coveralls.io/repos/github/okellogabrielinnocent/MyDiary/badge.svg?branch=challenge3)](https://coveralls.io/github/okellogabrielinnocent/MyDiary?branch=challenge3)
 # MyDiary
  MyDiary is an online journal where users can pen down their thoughts and feelings.
 
@@ -58,5 +58,7 @@ And from the root of the folder, type:
       
 To run the tests and coverage, from the root folder, type: 
         
-        coverage run -m pytest or nose2 -v
+        coverage run -m pytest 
+        or nose2 -v
+        or nosetests -v --with-coverage --cover-package=api
         coverage report

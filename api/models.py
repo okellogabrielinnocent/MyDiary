@@ -4,6 +4,8 @@ from .sql import tables
 import jwt
 from flask import jsonify
 import os
+import datetime
+from datetime import date
 
 from datetime import datetime, timedelta
 
@@ -12,6 +14,8 @@ JWT_SECRET = 'secret'
 JWT_ALGORITHM = 'HS256'
 JWT_EXP_DELTA_SECONDS = 9000
 DB_PASS = os.environ.get('DB_PASS')
+today = str(date.today())
+
 
 
 class Database(object):
@@ -32,6 +36,12 @@ class Database(object):
                                                host="localhost"
                                                )
             self.connection.autocommit = True
+
+
+            """establish a server connection on heroku"""
+
+            """DATABASE_URL = os.environ["DATABASE_URL"]
+            self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')"""
 
             # call connection cursor
             self.cursor = self.connection.cursor()
@@ -58,35 +68,13 @@ class Database(object):
             if result[0] == username:
                 msg = "Username already taken, try another"
                 return msg
-                '''return jsonify({"message": "Username already taken, try another"}), 409'''
+                
             if result[1] == email:
                 msg = "Email already used"
                 return msg
-                '''return jsonify({"message": "Email already used"}), 409'''
         return msg
 
-    def validate_entry(self,
-                         tittle,
-                         body
-                         ):
-        
-        select_query = "SELECT tittle, body FROM mydiary_entry"
-        self.cursor.execute(select_query)
-        row = self.cursor.fetchall()
-
-        msg = ""
-        for result in row:
-            if result[0] == tittle:
-                msg ="Title already used. Please change it"
-                return msg
-                #jsonify({"message": "Title already used. Please change it"}), 409
-            if result[1] == body:
-                msg = "Body already used"
-                return msg
-                #jsonify({"message": "Body already used"}), 409
-    
-
-                
+                    
     def signup(self,
                name,
                email,
@@ -105,7 +93,7 @@ class Database(object):
         hashed_password = generate_password_hash(password, method="sha256")
 
         """inserting user info into the mydiary_users table"""
-        msg = ""
+        
         try:
             sql = "INSERT INTO mydiary_users(name, email, username, " \
                   "phone_number, bio, gender, password) " \
@@ -148,39 +136,15 @@ class Database(object):
             return jsonify({"Message": "Username or password is incorrect"}),400
     
 
-    def get_users(self):
-        """ Returns a list of all users in the database """
-
-        select_query = "SELECT * FROM mydiary_users"
-        self.cursor.execute(select_query)
-        results = self.cursor.fetchall()
-
-        user_list = []
-
-        for user in results:
-            user_details = {}
-            user_details['name'] = user[0]
-            user_details['username'] = user[1]
-            user_details['email'] = user[2]
-            user_details['phone_number'] = user[3]
-            user_details['gender'] = user[4]
-            user_details['password'] = user[5]
-
-            user_list.append(user_details)
-
-        return user_list
-
-    def post_entry(self,user_id,tittle,body,creation_date):
-        
-        if self.validate_entry is False:
-            return "Entry already written"
-
+    
+    def post_entry(self,user_id,title,body,creation_date):
+        """method to create an entry"""
         try:
-            sql = "INSERT INTO mydiary_entry(user_id,tittle, body, creation_date) " \
-                                             "VALUES (%s, %s, %s, %s)"
+            sql = "INSERT INTO mydiary_entry(user_id,title, body, creation_date) " \
+                                            "VALUES (%s, %s, %s, %s)"
             self.cursor.execute(
                                 sql,
-                                (user_id, tittle, body, creation_date)
+                                (user_id, title, body, creation_date)
                                 )
         except psycopg2.Error as err:
             return str(err)
@@ -190,7 +154,7 @@ class Database(object):
     def get_entries(self):
         """ Returns a list of all entries created """
 
-        sql = "SELECT tittle, body, creation_date, update_date, " \
+        sql = "SELECT title, body, creation_date, update_date, " \
               "id FROM mydiary_entry"
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
@@ -199,7 +163,7 @@ class Database(object):
         for entry in result:
 
             entry_info = {}
-            entry_info['tittle'] = entry[0]
+            entry_info['title'] = entry[0]
             entry_info['body'] = entry[1]
             entry_info['creation_date'] = entry[2]
             entry_info['update_date'] = entry[3]
@@ -230,7 +194,7 @@ class Database(object):
         Returns the details of a entry with user details whose id is provided
         """
 
-        sql = "SELECT tittle, body, creation_date, update_date, " \
+        sql = "SELECT title, body, creation_date, update_date, " \
               "user_id FROM mydiary_entry WHERE id=%s" % entry_id
 
         self.cursor.execute(sql)
@@ -244,7 +208,7 @@ class Database(object):
             # user information to be returned with entries details
             user_id = info[4]
             user_info = self.get_user_info(user_id)
-            entry_info['tittle'] = info[0]
+            entry_info['title'] = info[0]
             entry_info['body'] = info[1]
             entry_info['creation_date'] = info[2]
             entry_info['update_date'] = info[3]
@@ -256,12 +220,12 @@ class Database(object):
     def update_to_entry(self,
                            current_user,
                            entry_id,
-                           tittle,
+                           title,
                            body,
                            creation_date
                            ):
         # check for the presence of that entry id
-        sql = "SELECT tittle,body,creation_date, user_id FROM mydiary_entry WHERE id={}"\
+        sql = "SELECT title,body,creation_date, user_id FROM mydiary_entry WHERE id={}"\
               .format(entry_id)
         self.cursor.execute(sql)
 
@@ -287,8 +251,8 @@ class Database(object):
         if not result:
             return jsonify({"message":"Sorry, you are only allowed update entry you created"})
 
-        sql = "UPDATE mydiary_entry SET tittle='{}',body='{}', creation_date='{}' WHERE id={}"\
-              .format(tittle, body, creation_date, entry_id)
+        sql = "UPDATE mydiary_entry SET title='{}',body='{}', creation_date='{}' WHERE id={}"\
+              .format(title, body, creation_date, entry_id)
 
         self.cursor.execute(sql)
 

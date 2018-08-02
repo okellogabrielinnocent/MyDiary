@@ -131,20 +131,20 @@ class Diary(unittest.TestCase):
 
         # ----------------- Create entry  ---------------------
 
-        self.entry_1 = {"tittle": "Andela",
+        self.entry_1 = {"title": "Andela",
                        "body": "It's time to join the Andela community",
                        "creation_date": "2018-07-28",
                        "update_date": "1st/06/2018"
                        }
 
-        self.entry_2 = {"tittle": "Growth Mindset",
+        self.entry_2 = {"title": "Growth Mindset",
                        "body": "Andela",
                        "creation_date": "2018-07-28",
                        "update_date": "1st/06/2018"
                        }
         
 
-        self.entry_400 = {"tittle_400": "Growth Mindset",
+        self.entry_400 = {"title_400": "Growth Mindset",
                          "body_400": "Andela",
                          "creation_date": "2018-07-28",
                          "update_date": "1st/06/2018",
@@ -161,7 +161,7 @@ class Diary(unittest.TestCase):
         """
         response = self.app.post('/api/v1/entries', 
                             data={
-                                "tittle": "Growth Mindset",
+                                "title": "Growth Mindset",
                                 "body": "Andela",
                                 "creation_date": "2018-07-28",
                                 "update_date": "1st/06/2018"
@@ -201,31 +201,9 @@ class Diary(unittest.TestCase):
             response = self.app.post("{}auth/signup".format(BASE_URL),
                                      data=json.dumps(self.user_4),
                                      content_type=content_type)
-
-            
             self.assertEqual(response.status_code, 400)
             self.assertEqual(response.json,
                             {"message": "Email is not defined"})
-
-            
-
-
-    def test_create_user_same_username(self):
-        """ Creating another user with the same username """
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json,
-                         {"message": "Account successfully created"})
-
-        # Creating another user with the same username, email and password
-        response = self.app.post("{}auth/signup".format(BASE_URL),
-                                 data=json.dumps(self.user_1),
-                                 content_type=content_type)
-        self.assertEqual(response.status_code, 200)
-    
 
     def test_validate_user_with_no_username(self):
         """ Creating another user with the same  """
@@ -233,7 +211,7 @@ class Diary(unittest.TestCase):
         self.app.post('/api/v1/entries', 
                     data={
                         "email": "okellogabrielinnocent@gmail.com",
-                        "username": "tessgab"
+                        "username": ""
                         }
                         )
         response = self.app.post("{}auth/signup".format(BASE_URL),
@@ -541,9 +519,8 @@ class Diary(unittest.TestCase):
                                 headers={'Authorization': self.token}, 
                                 content_type=content_type)
 
-        # self.assertEqual(response_400.status_code, 400)
+        
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'message': 'Entry id should be integer'})
 
     def test_get_single_entry_2(self):
         """ Create a user , login and then create a entry
@@ -630,7 +607,7 @@ class Diary(unittest.TestCase):
 
         # self.assertEqual(response_400.status_code, 400)
         self.assertEqual(response.json, {"Message": "The entry with entry id {} does not exist".format(4)})
-
+        
         
     def tearDown(self):
         sql_entry = "DROP TABLE IF EXISTS mydiary_entry"

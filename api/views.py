@@ -84,22 +84,11 @@ def login():
 @app.route('/api/v1/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
-    
-    if  "body" not in request.json:
-        error = 'body is not defined'
-        return jsonify({"message": error}), 400
-    
-    if "title" not in request.json:
-        error = 'title not defined'
-    
-    """
-    Creating a entry with auto date 
-    """
         
-    
-
+    request.json['creation_date'] = today
     title = request.json['title']
     body = request.json['body']
+    creation_date = request.json['creation_date']
 
     """validations"""
 
@@ -107,16 +96,15 @@ def create_entry(current_user):
         return jsonify({"message": "Body should be string"})
 
 
-    if not isinstance(today, str):
+    if not isinstance(creation_date, str):
         return jsonify({"message": "Update  should be string and of same day as create date"})
 
     result = db_connection.post_entry(current_user[2],
                                             title,
                                             body,
-                                            today
+                                            creation_date
                                             )
-    return jsonify({"message": result}),201
-    print(result)
+    return jsonify({"message": result})
 
 
 @app.route('/api/v1/entries', methods=['GET'])

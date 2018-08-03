@@ -16,20 +16,21 @@
 4. Users can add or modify an entry.
 
 **API end points**
+
 EndPoint | Functionality
 ------------ | -------------
 POST /api/v1/auth/signup|Creates new user
-POST //api/v1/auth/login|Signs in a new user
+POST /api/v1/auth/login|Signs in a new user
 GET /entries | Fetches all entries
 POST /entries|Create an entry
-GET /entries/<entryId>|Fetch a single entry
-PUT /entries/<entryId>|Modify an entry
+GET /entries/<'entryId>|Fetch a single entry
+PUT /entries/<'entryId>|Modify an entry
 
 
 **Getting Started**
 
 These instructions will enable you to run the project on your local machine.
-Set up postgress
+
 
 **Prerequisites**
 
@@ -38,7 +39,7 @@ Below are the things you need to get the project up and running.
 - git : To update and clone the repository
 - python3: Language used to develop the api
 - pip: A python package used to install project requirements specified in the requirements text file.
-- PostgresSQL installed
+- PostgresSQL installed and running
 
  **Set Up database**
  - Download and install postgresSQL

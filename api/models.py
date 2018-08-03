@@ -59,6 +59,8 @@ class Database(object):
                          username,
                          email
                          ):
+
+
         
         select_query = "SELECT username, email FROM mydiary_users"
         self.cursor.execute(select_query)
@@ -130,6 +132,7 @@ class Database(object):
                 return jsonify({"Message": token.decode('UTF-8')})
 
         else:
+
             
             return jsonify({"Message": "Username or password is incorrect"}),400
     
@@ -265,3 +268,4 @@ class Database(object):
         self.cursor.execute(sql)
 
         return jsonify({"message": "Entry with id {} updated successfully".format(entry_id)}),200
+

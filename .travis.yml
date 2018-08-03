@@ -15,3 +15,18 @@ script:
   - nosetests -v --with-coverage --cover-package=api
 after_success:
   - coveralls
+cache: pip
+
+install:
+ - pip install -r requirements.txt
+ - pip install coverage
+ - pip install coveralls
+ - pip install nose
+ 
+# command to run tests
+script:
+ - nosetests -v --with-coverage --cover-package=api
+
+after_success:
+- coveralls
+

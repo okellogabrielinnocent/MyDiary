@@ -66,12 +66,10 @@ class Database(object):
         msg =""
         for result in row:
             if result[0] == username:
-                msg = "Username already taken, try another"
-                return msg
+                return jsonify({"Message": "Username already taken, try another"}),409
                 
             if result[1] == email:
-                msg = "Email already used"
-                return msg
+                return jsonify({"Message": "Email already used"}),409
         return msg
 
                     
@@ -226,7 +224,6 @@ class Database(object):
         
         return jsonify(entry_info)
 
-        """return jsonify({"entry details": entry_info})"""
 
     def update_to_entry(self,
                            current_user,

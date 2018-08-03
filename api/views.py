@@ -13,49 +13,26 @@ today = str(date.today())
 def create_user():
     """ Creating a user account
         calls the signup() function in models.py
-    """
-    
-    if  "name" not in request.json:
-        err = 'Please define name and it should be string'
-        return jsonify({"message": err}), 400
-    
-    if "email" not in request.json:
-        erro = 'Email is not defined'
-        return jsonify({"message": erro}), 400
+    """    
+    try:
+        name = request.json["name"]
+        email = request.json['email']
+        username = request.json['username']
+        phone_number = request.json['phone_number']
+        bio = request.json['bio']
+        gender = request.json['gender']
+        password = request.json['password']
 
-    if  "username" not in request.json:
-        error = 'Username not defined'
-        return jsonify({"message": error}), 400
+        result = db_connection.signup(name,
+                                            email,
+                                            username,
+                                            phone_number,
+                                            bio, gender,
+                                            password)
 
-    if  "phone_number" not in request.json:
-        error1 = 'Phone_number not defined'
-        return jsonify({"message": error1}), 400
-
-    if  "bio" not in request.json:
-        error2 = 'Please bio is not defined'
-        return jsonify({"message": error2}), 400
-    
-    if "password" not in request.json:
-        error = 'Password not defined'
-        return jsonify({"message": error}), 400
-    
-
-    name = request.json["name"]
-    email = request.json['email']
-    username = request.json['username']
-    phone_number = request.json['phone_number']
-    bio = request.json['bio']
-    gender = request.json['gender']
-    password = request.json['password']
-
-    result = db_connection.signup(name,
-                                        email,
-                                        username,
-                                        phone_number,
-                                        bio, gender,
-                                        password)
-
-    return result
+        return result
+    except Exception as err:
+        return jsonify({"message": "The {} parameter does not exist".format(str(err))}), 400
 
 
 @app.route('/api/v1/auth/login', methods=['POST'])
@@ -79,27 +56,20 @@ def login():
 @app.route('/api/v1/entries', methods=['POST'])
 @token_required
 def create_entry(current_user):
-        
-    request.json['creation_date'] = today
-    title = request.json['title']
-    body = request.json['body']
-    creation_date = request.json['creation_date']
+    try:  
+        request.json['creation_date'] = today
+        title = request.json['title']
+        body = request.json['body']
+        creation_date = request.json['creation_date']
 
-    """validations"""
-
-    if not isinstance(body, str):
-        return jsonify({"message": "Body should be string"})
-
-
-    if not isinstance(creation_date, str):
-        return jsonify({"message": "Update  should be string and of same day as create date"})
-
-    result = db_connection.post_entry(current_user[2],
-                                            title,
-                                            body,
-                                            creation_date
-                                            )
-    return jsonify({"message": result})
+        result = db_connection.post_entry(current_user[2],
+                                                title,
+                                                body,
+                                                creation_date
+                                                )
+        return jsonify({"message": result})
+    except Exception as err:
+        return jsonify({"Message": "The {} parameter does not exist".format(str(err))}), 404
 
 
 @app.route('/api/v1/entries', methods=['GET'])
@@ -132,17 +102,13 @@ def update_entry(current_user,entry_id):
         return jsonify(
             {"message": "Entry_id should be of type integer"}
         )
+    try:
+        request.json['creation_date'] = today
+        title = request.json['title']
+        body = request.json['body']
+        creation_date = request.json['creation_date']   
 
-    if not request.json or 'title' not in request.json:
-        return jsonify({"message":"You can only edit title"}), 400
-    
-    if not request.json or 'body' not in request.json:
-        return jsonify({"message":"You can only edit body"}), 400
-
-    request.json['creation_date'] = today
-    title = request.json['title']
-    body = request.json['body']
-    creation_date = request.json['creation_date']   
-
-    result = db_connection.update_to_entry(current_user[2], entry_id, title, body,creation_date)
-    return result
+        result = db_connection.update_to_entry(current_user[2], entry_id, title, body,creation_date)
+        return result
+    except ValueError as err:
+        return jsonify({"Message": "The {} parameter does not exist".format(str(err))}), 404

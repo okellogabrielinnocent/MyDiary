@@ -27,6 +27,10 @@ GET /entries/<'entryId>|Fetch a single entry
 PUT /entries/<'entryId>|Modify an entry
 
 
+**Documentation**
+
+Check out the documentation https://mydiary13.docs.apiary.io
+
 **Getting Started**
 
 These instructions will enable you to run the project on your local machine.

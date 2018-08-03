@@ -236,8 +236,8 @@ class Diary(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json,
                          {"message": "The 'name' parameter does not exist"})
-
     
+     
     
 
     def test_create_user_3(self):
@@ -248,6 +248,8 @@ class Diary(unittest.TestCase):
         self.assertEqual(response_2.status_code, 200)
         self.assertEqual(response_2.json,
                          {"message": "Account successfully created"})
+
+    
 
     def test_create_user_5(self):
         """ Wrong and missing user fields | Should raise and error Message """

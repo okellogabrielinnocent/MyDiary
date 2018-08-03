@@ -9,6 +9,7 @@ db_connection = Database()
 today = str(date.today())
 
 
+
 @app.route('/api/v1/auth/signup', methods=['POST'])
 def create_user():
     """ Creating a user account

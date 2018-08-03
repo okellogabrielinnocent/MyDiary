@@ -210,7 +210,7 @@ class Diary(unittest.TestCase):
                                      content_type=content_type)
             self.assertEqual(response.status_code, 400)
             self.assertEqual(response.json,
-                            {"message": "Email is not defined"})
+                            {"message": "The 'email' parameter does not exist"})
 
     def test_validate_user_with_no_username(self):
         """ Creating another user with the same  """
@@ -235,7 +235,7 @@ class Diary(unittest.TestCase):
                                  content_type=content_type)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json,
-                         {"message": "Please define name and it should be string"})
+                         {"message": "The 'name' parameter does not exist"})
 
     
     
@@ -257,7 +257,7 @@ class Diary(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "Username not defined"})
+                         {"message": "The 'username' parameter does not exist"})
 
     def test_create_user_6(self):
         """ Wrong and missing user fields | Should raise and error Message """
@@ -267,7 +267,7 @@ class Diary(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "Phone_number not defined"})
+                         {"message": "The 'phone_number' parameter does not exist"})
     
 
     def test_create_user_7(self):
@@ -278,7 +278,7 @@ class Diary(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "Please bio is not defined"})
+                         {"message": "The 'bio' parameter does not exist"})
     
 
     def test_create_user_8(self):
@@ -289,7 +289,7 @@ class Diary(unittest.TestCase):
 
         self.assertEqual(response_3.status_code, 400)
         self.assertEqual(response_3.json,
-                         {"message": "Password not defined"})
+                         {"message": "The 'password' parameter does not exist"})
 
     """************************* Test Login **********************************"""
 

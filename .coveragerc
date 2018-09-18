@@ -24,6 +24,12 @@ omit = venv/*
        */stringprep.py
        */api/__init__.py
        */utilities/*
+       */asn1crypto/*
+        */cryptography/*
+        */jwt/*
+        */psycopg2/*
+        */six.py
+        */sql.py               
          
 
 

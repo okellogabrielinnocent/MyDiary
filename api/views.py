@@ -1,79 +1,115 @@
 from flask import Flask, request, jsonify
-from flask import Flask
-from flask import jsonify
-from flask import request
-from .models import Entry
+from .models import Database
+from .utils import token_required
 import datetime
 from datetime import date
-'''
-Initialising a flask application
-'''
 
-app = Flask(__name__)  
+app = Flask(__name__)
+db_connection = Database()
+today = str(date.today())
 
-'''
-API end points
-'''
-@app.route('/api/v1/entries',methods=['GET'])
-def get_all_entries():
-    return jsonify({'Entries Cretated':Entry.entries}),200
 
-@app.route('/api/v1/entries/<entryId>',methods=['GET'])
-def get_entry(entryId):
-    entryy = [ entry for entry in Entry.entries if (entry['id'] == entryId) ]
-    print (entryy)
-    return jsonify({'entry':entryy}),200
 
-@app.route('/api/v1/entries/<entryId>',methods=['PUT'])
-def update_entry(entryId):
-    data = request.get_json()
-    ''' 
-    generate date
-    '''
-    today = str(date.today())
-    data['date'] = today
-    en = [ entry for entry in Entry.entries if (entry['id'] == entryId) ]
-    if  not 'tittle' in data:
-        error = 'Please you entered wrong tittle'
-        return error
-    elif 'tittle' in data:
-        en[0]['tittle'] = data['tittle']
+@app.route('/api/v1/auth/signup', methods=['POST'])
+def create_user():
+    """ Creating a user account
+        calls the signup() function in models.py
+    """    
+    try:
+        name = request.json["name"]
+        email = request.json['email']
+        username = request.json['username']
+        phone_number = request.json['phone_number']
+        bio = request.json['bio']
+        gender = request.json['gender']
+        password = request.json['password']
 
-    if not 'body' in data:
-        error = 'Please you entered wrong body'
-        return error    
-    elif 'body' in data:
-        en[0]['body'] = data['body']
+        result = db_connection.signup(name,
+                                            email,
+                                            username,
+                                            phone_number,
+                                            bio, gender,
+                                            password)
 
+        return result
+    except Exception as err:
+        return jsonify({"message": "The {} parameter does not exist".format(str(err))}), 400
+
+
+@app.route('/api/v1/auth/login', methods=['POST'])
+def login():
+    """ The function confirms the presence of user.
+        It login the user by providing a web token
+    """
     
-    if 'date' in data : 
-        en[0]['date'] = data['date']
-    return jsonify({'entry':en}),200
+    try:
 
-@app.route('/api/v1/entries',methods=['POST'])
-def create_entry():
-    data = request.get_json()
-    ''' 
-    generate date
-    '''
-    today = str(date.today())
-    data['date'] = today
-    '''
-    generate id
-    '''
-    number_of_entries = 0
-    for i in range(len(Entry.entries)):
-        number_of_entries += 1
-    data['id'] = number_of_entries
-    dat = {
-    'id':data['id'],
-    'tittle':data['tittle'],
-    'body':data['body'],
-    'date':data['date']
-    }
-    if  not 'tittle' and 'body' and 'id' and 'date' in data:
-        error = 'Please enter correct details'
-        return error
-    elif 'tittle' and 'body' and 'id' and 'date' in data:
-        Entry.entries.append(dat)
-        return jsonify({"message":"Entry Created"},dat),201
+        username = request.json['username']
+        password = request.json['password']
+
+        # sign_in now by calling the sign in message
+        result = db_connection.sign_in(username, password)
+        return result
+    except Exception as err:
+        return jsonify({"Message": "The {} parameter does not exist".format(str(err))})
+
+
+@app.route('/api/v1/entries', methods=['POST'])
+@token_required
+def create_entry(current_user):
+    try:  
+        request.json['creation_date'] = today
+        title = request.json['title']
+        body = request.json['body']
+        creation_date = request.json['creation_date']
+
+        result = db_connection.post_entry(current_user[2],
+                                                title,
+                                                body,
+                                                creation_date
+                                                )
+        return jsonify({"message": result})
+    except Exception as err:
+        return jsonify({"Message": "The {} parameter does not exist".format(str(err))}), 404
+
+
+@app.route('/api/v1/entries', methods=['GET'])
+@token_required
+def available_entries(current_user):
+    """ Retrieves all the available entry written """
+    result = db_connection.get_entries()
+    return result, 200
+
+
+@app.route('/api/v1/entries/<entry_id>', methods=['GET'])
+@token_required
+def get_single_entry(current_user, entry_id):
+    """ Retrieve a single entry by providing the entry_id """
+    try:
+        entry_id = int(entry_id)
+        result = db_connection.entry_details(entry_id)
+        return result, 200
+    except:
+        return jsonify({"message": "Entry id should be integer"})
+    
+
+@app.route('/api/v1/entries/<entry_id>',methods=['PUT'])
+@token_required
+def update_entry(current_user,entry_id):
+    
+    try:
+        id = int(entry_id)
+    except ValueError as errr:
+        return jsonify(
+            {"message": "Entry_id should be of type integer"}
+        )
+    try:
+        request.json['creation_date'] = today
+        title = request.json['title']
+        body = request.json['body']
+        creation_date = request.json['creation_date']   
+
+        result = db_connection.update_to_entry(current_user[2], entry_id, title, body,creation_date)
+        return result
+    except ValueError as err:
+        return jsonify({"Message": "The {} parameter does not exist".format(str(err))}), 404

@@ -35,7 +35,5 @@ class ValidateInputs():
         if not isinstance(body, str):
             body = str(body)
         if body.isdigit() == False:
-            return False, "body can only contain numbers"
+            return False, "body can not only contain numbers"
         return True, "OK"
-    
-                
